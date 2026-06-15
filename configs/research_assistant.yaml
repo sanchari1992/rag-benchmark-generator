@@ -1,0 +1,27 @@
+name: research-assistant-chatbot
+
+repo_path: repositories/research-assistant-chatbot
+
+vector_store: unknown
+
+embedding_model: unknown
+
+llm: unknown
+
+documents_path: null
+
+chunk_size: null
+
+chunk_overlap: null
+
+retrieval_top_k: null
+
+num_documents: null
+
+num_chunks: null
+
+num_tokens: null
+
+query_entrypoint: null
+
+retrieval_entrypoint: null
