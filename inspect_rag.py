@@ -33,20 +33,20 @@ print(
 # Test retrieval
 # ----------------------------
 
-results = adapter.retrieve(
-    "Why was Edmond Dantes imprisoned?"
-)
+# results = adapter.retrieve(
+#     "Why was Edmond Dantes imprisoned?"
+# )
 
-print("\nRETRIEVAL RESULTS\n")
+# print("\nRETRIEVAL RESULTS\n")
 
-for i, doc in enumerate(results):
+# for i, doc in enumerate(results):
 
-    print("=" * 80)
+#     print("=" * 80)
 
-    print(
-        f"RESULT {i+1}"
-    )
+#     print(
+#         f"RESULT {i+1}"
+#     )
 
-    print(
-        doc["raw_text"][:1000]
-    )
+#     print(
+#         doc["raw_text"][:1000]
+#     )
