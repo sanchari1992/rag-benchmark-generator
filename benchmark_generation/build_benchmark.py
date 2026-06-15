@@ -1,8 +1,8 @@
 import json
 from tqdm import tqdm
 
-from core.sampler import sample_chunks
-from core.types import BenchmarkExample
+from benchmark_generation.core.sampler import sample_chunks
+from benchmark_generation.core.types import BenchmarkExample
 
 
 def build_benchmark(

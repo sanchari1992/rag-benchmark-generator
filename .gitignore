@@ -1,3 +1,8 @@
 /adapters/__pycache__
 /exports
 .env
+/benchmark_generation/strategies/__pycache__
+/benchmark_generation/prompts/__pycache__
+/benchmark_generation/core/__pycache__
+/benchmark_generation/llm/__pycache__
+/benchmark_generation/__pycache__

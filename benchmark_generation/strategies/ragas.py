@@ -1,5 +1,5 @@
-from strategies.base import BenchmarkStrategy
-from prompts.ragas_prompts import (
+from benchmark_generation.strategies.base import BenchmarkStrategy
+from benchmark_generation.prompts.ragas_prompts import (
     RAGAS_QUESTION_PROMPT,
     RAGAS_ANSWER_PROMPT
 )
