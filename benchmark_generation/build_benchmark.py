@@ -16,6 +16,7 @@ def build_benchmark(
 
     chunks = adapter.export_chunks()
     sampled = sample_chunks(chunks, k=sample_size)
+    repo_info = adapter.build_config()
 
     dataset = []
 
@@ -31,10 +32,27 @@ def build_benchmark(
             )
 
             example = BenchmarkExample(
-                chunk_id=chunk["chunk_id"],
+
+                id=i,
+
+                repo_name=repo_info["name"],
+
+                strategy=strategy.name,
+
+                generator_model=model,
+
+                source_chunk=chunk["chunk_id"],
+
+                context_length=len(chunk["text"]),
+                chapter_name=chunk.get("chapter_name",""),
+
                 question=question,
+
                 answer=answer,
-                source_text=chunk["text"]
+
+                source_text=chunk["text"],
+                
+                compression_stage="none"
             )
 
             dataset.append(example.__dict__)

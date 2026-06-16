@@ -21,7 +21,7 @@ from benchmark_generation.build_benchmark import build_benchmark
 # ----------------------------
 # Strategy
 # ----------------------------
-from benchmark_generation.strategies.ragas import RAGASStrategy
+from benchmark_generation.strategies.ragas.strategy import RAGASStrategy
 
 # ----------------------------
 # Size module
@@ -36,7 +36,7 @@ from benchmark_generation.core.sizing import DatasetSizingConfig, compute_benchm
 print("\n[1/4] Loading RAG adapter...")
 
 REPO_PATH = "repositories/Neural_networks_RAG"
-OUTPUT_PATH = "exports/ragas_benchmark.json"
+OUTPUT_PATH = "exports/ares_benchmark.json"
 MODEL_NAME = "deepseek-chat"
 
 adapter = NeuralNetworksRAGAdapter(REPO_PATH)
@@ -85,9 +85,20 @@ print("✔ LLM ready")
 
 print("\n[3/4] Loading benchmark strategy...")
 
-strategy = RAGASStrategy()
+from benchmark_generation.strategy_factory import (
+    load_strategy
+)
 
-print("✔ RAGAS strategy active")
+# STRATEGY = "ragas"
+STRATEGY = "ares"
+
+strategy = load_strategy(
+    STRATEGY
+)
+
+print(
+    f"✔ {strategy.name} strategy active"
+)
 
 
 # =========================================================
