@@ -26,3 +26,8 @@ configs/ # metadata configs
 
 
 ---
+
+## 📁 RAGS used
+
+- RAGIFY: https://github.com/kanad13/RAGify
+- NEURAL: https://github.com/kanad13/RAGify
