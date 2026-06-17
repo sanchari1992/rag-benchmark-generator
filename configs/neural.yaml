@@ -1,0 +1,11 @@
+name: Neural_Networks_RAG
+repo_path: repositories\Neural_networks_RAG
+retrieval_type: BM25 + Dense + CrossEncoder
+dense_model: all-MiniLM-L6-v2
+cross_encoder: cross-encoder/ms-marco-MiniLM-L-12-v2
+llm: groq/llama3-8b-8192
+corpus_file: repositories\Neural_networks_RAG\data\chunked_data_corpus.csv
+num_chunks: 294
+total_characters: 2936683
+avg_chunk_length: 9988
+benchmark_size_5pct: 14

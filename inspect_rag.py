@@ -1,52 +1,143 @@
-from adapters.neural_networks_rag_adapter import (
-    NeuralNetworksRAGAdapter
+from pathlib import Path
+
+from adapters.factory import (
+    load_adapter
 )
 
-adapter = NeuralNetworksRAGAdapter(
-    "repositories/Neural_networks_RAG"
-)
+# =====================================================
+# SELECT RAG
+# =====================================================
 
-# ----------------------------
-# Create config yaml
-# ----------------------------
+RAG_NAME = "ragify"
+# RAG_NAME = "neural"
 
-config = adapter.save_config(
-    "configs/neural_networks_rag.yaml"
-)
+# =====================================================
+# LOAD ADAPTER
+# =====================================================
 
-print("\nCONFIG\n")
-print(config)
+print("\nLoading adapter...\n")
 
-# ----------------------------
-# Export corpus
-# ----------------------------
-
-adapter.save_chunks(
-    "exports/neural_chunks.json"
+adapter = load_adapter(
+    RAG_NAME
 )
 
 print(
-    "\nChunks exported successfully."
+    f"Adapter loaded: {RAG_NAME}"
 )
 
-# ----------------------------
-# Test retrieval
-# ----------------------------
+# =====================================================
+# OUTPUT PATHS
+# =====================================================
 
-# results = adapter.retrieve(
-#     "Why was Edmond Dantes imprisoned?"
-# )
+config_path = (
+    f"configs/{RAG_NAME}.yaml"
+)
 
-# print("\nRETRIEVAL RESULTS\n")
+chunks_path = (
+    f"exports/{RAG_NAME}_chunks.json"
+)
 
-# for i, doc in enumerate(results):
+Path("configs").mkdir(
+    exist_ok=True
+)
 
-#     print("=" * 80)
+Path("exports").mkdir(
+    exist_ok=True
+)
 
-#     print(
-#         f"RESULT {i+1}"
-#     )
+# =====================================================
+# BUILD CONFIG
+# =====================================================
 
-#     print(
-#         doc["raw_text"][:1000]
-#     )
+print("\nBuilding config...\n")
+
+config = adapter.save_config(
+    config_path
+)
+
+print("CONFIG\n")
+
+for k, v in config.items():
+
+    print(
+        f"{k}: {v}"
+    )
+
+# =====================================================
+# EXPORT CHUNKS
+# =====================================================
+
+print("\nExporting chunks...\n")
+
+adapter.save_chunks(
+    chunks_path
+)
+
+print(
+    f"Chunks exported to {chunks_path}"
+)
+
+# =====================================================
+# RETRIEVAL TEST
+# =====================================================
+
+print("\nTesting retrieval...\n")
+
+TEST_QUERY = (
+    "What are the company policies?"
+    if RAG_NAME == "ragify"
+    else
+    "Why was Edmond Dantes imprisoned?"
+)
+
+results = adapter.retrieve(
+    TEST_QUERY,
+    k=3
+)
+
+print(
+    f"\nQuery: {TEST_QUERY}\n"
+)
+
+print(
+    f"Retrieved {len(results)} chunks\n"
+)
+
+for i, doc in enumerate(results):
+
+    print("=" * 80)
+
+    print(
+        f"RESULT {i+1}"
+    )
+
+    print("-" * 80)
+
+    # RAGify format
+    if "source_document" in doc:
+
+        print(
+            f"Source: {doc['source_document']}"
+        )
+
+        print()
+
+        print(
+            doc["text"][:1000]
+        )
+
+    # Neural Networks RAG format
+    elif "raw_text" in doc:
+
+        print(
+            doc["raw_text"][:1000]
+        )
+
+    # Generic fallback
+    elif "text" in doc:
+
+        print(
+            doc["text"][:1000]
+        )
+
+    print("\n")

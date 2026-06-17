@@ -126,3 +126,16 @@ class BaseAdapter(ABC):
             10,
             int(stats["num_chunks"] * percent)
         )
+
+    @abstractmethod
+    def build_config(self) -> Dict[str, Any]:
+        """
+        Must return reproducibility metadata for benchmarking.
+
+        Required fields:
+        - name
+        - retrieval_type
+        - embedding_model (if applicable)
+        - num_chunks (optional but recommended)
+        """
+        pass

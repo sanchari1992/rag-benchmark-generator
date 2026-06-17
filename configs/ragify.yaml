@@ -1,0 +1,7 @@
+{
+  "adapter": "RAGify",
+  "repo_path": "repositories\\RAGify",
+  "pdf_folder": "repositories\\RAGify\\input_files",
+  "embedding_model": "all-mpnet-base-v2",
+  "num_chunks": 13
+}

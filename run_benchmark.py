@@ -1,5 +1,8 @@
 import os
 from dotenv import load_dotenv
+from datetime import datetime
+from pathlib import Path
+import json
 
 load_dotenv()
 
@@ -30,25 +33,28 @@ from benchmark_generation.core.sizing import DatasetSizingConfig, compute_benchm
 
 
 # =========================================================
-# STEP 1: Load RAG Adapter (MUST COME FIRST)
+# STEP 1: Load RAG Adapter
 # =========================================================
 
 print("\n[1/4] Loading RAG adapter...")
 
-REPO_PATH = "repositories/Neural_networks_RAG"
-OUTPUT_PATH = "exports/ares_benchmark.json"
 MODEL_NAME = "deepseek-chat"
 
-adapter = NeuralNetworksRAGAdapter(REPO_PATH)
+RAG_NAME = "neural"
+# RAG_NAME = "ragify"
 
-stats = adapter.inspect()   # ✅ NOW IT EXISTS
+from adapters.factory import load_adapter
+
+adapter = load_adapter(RAG_NAME)
+
+stats = adapter.inspect()
 
 print("✔ Adapter loaded")
 print(f"   - Chunks: {stats['num_chunks']}")
 
 
 # =========================================================
-# STEP 2: Compute benchmark size (AFTER stats exist)
+# STEP 2: Compute benchmark size
 # =========================================================
 
 SAMPLE_SIZE = compute_benchmark_size(
@@ -85,24 +91,48 @@ print("✔ LLM ready")
 
 print("\n[3/4] Loading benchmark strategy...")
 
-from benchmark_generation.strategy_factory import (
-    load_strategy
-)
+from benchmark_generation.strategy_factory import load_strategy
 
-# STRATEGY = "ragas"
-STRATEGY = "ares"
+STRATEGY = "ragas"
+# STRATEGY = "ares"
 
-strategy = load_strategy(
-    STRATEGY
-)
+strategy = load_strategy(STRATEGY)
 
-print(
-    f"✔ {strategy.name} strategy active"
-)
+print(f"✔ {strategy.name} strategy active")
 
 
 # =========================================================
-# STEP 5: Build Benchmark
+# STEP 5: EXPERIMENT SETUP (NEW)
+# =========================================================
+
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+RUN_ID = f"run_{timestamp}"
+
+BASE_DIR = Path("exports") / STRATEGY / RAG_NAME / RUN_ID
+BASE_DIR.mkdir(parents=True, exist_ok=True)
+
+OUTPUT_PATH = BASE_DIR / "benchmark.json"
+CONFIG_PATH = BASE_DIR / "config.json"
+STATS_PATH = BASE_DIR / "stats.json"
+
+
+# Save run metadata BEFORE generation
+run_metadata = {
+    "rag": RAG_NAME,
+    "strategy": STRATEGY,
+    "model": MODEL_NAME,
+    "sample_size": SAMPLE_SIZE,
+    "num_chunks": stats["num_chunks"],
+    "timestamp": timestamp
+}
+
+with open(CONFIG_PATH, "w") as f:
+    json.dump(run_metadata, f, indent=2)
+
+
+# =========================================================
+# STEP 6: Build Benchmark
 # =========================================================
 
 print("\n[4/4] Generating benchmark dataset...")
@@ -113,10 +143,24 @@ dataset = build_benchmark(
     model=MODEL_NAME,
     strategy=strategy,
     sample_size=SAMPLE_SIZE,
-    output_path=OUTPUT_PATH
+    output_path=str(OUTPUT_PATH)
 )
+
+# Save dataset stats
+dataset_stats = {
+    "dataset_size": len(dataset),
+    "corpus_size": stats["num_chunks"]
+}
+
+with open(STATS_PATH, "w") as f:
+    json.dump(dataset_stats, f, indent=2)
+
+
+# =========================================================
+# FINAL REPORT
+# =========================================================
 
 print("\n✔ DONE")
 print(f"Dataset size: {len(dataset)}")
 print(f"Corpus size: {stats['num_chunks']}")
-print(f"Saved to: {OUTPUT_PATH}")
+print(f"Run saved in: {BASE_DIR}")
