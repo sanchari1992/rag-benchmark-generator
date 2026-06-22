@@ -31,3 +31,12 @@ configs/ # metadata configs
 
 - RAGIFY: https://github.com/kanad13/RAGify
 - NEURAL: https://github.com/kanad13/RAGify
+
+
+## Sample Commands
+
+### Evaluation Runs
+python generate_answers.py .\exports\ragas\ragify\run_20260617_142317\benchmark.json --rag ragify --output .\evaluation_results\ragas_ragify_results.json  
+
+
+python .\evaluators\evaluator.py .\exports\ragas\ragify\run_20260617_142317\benchmark.json .\evaluation_results\ragas_ragify_results.json --output .\evaluation_results\ragas_ragify_evalmetrics

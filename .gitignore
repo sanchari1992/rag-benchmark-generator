@@ -9,3 +9,6 @@
 /benchmark_generation/strategies/ragas/__pycache__
 /benchmark_generation/strategies/ares/__pycache__
 /benchmark_generation/prompts/ares/__pycache__
+/evaluators/__pycache__
+/evaluation_results/ragas_ragify_evalmetrics
+/evaluation_results
