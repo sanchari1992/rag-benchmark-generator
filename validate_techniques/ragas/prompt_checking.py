@@ -14,7 +14,7 @@ load_dotenv()
 
 MAX_PAGES = 50
 
-OUTPUT_DIR = "../repositories/wiki_ragas"
+OUTPUT_DIR = "../../repositories/wiki_ragas"
 DOCS_DIR = os.path.join(OUTPUT_DIR, "documents")
 METADATA_FILE = os.path.join(OUTPUT_DIR, "metadata.json")
 
