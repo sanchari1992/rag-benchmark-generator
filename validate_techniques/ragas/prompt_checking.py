@@ -4,56 +4,26 @@ import time
 import requests
 from tqdm import tqdm
 from datasets import load_dataset
-from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
-
 
 # =========================
 # CONFIG
 # =========================
 
-client = OpenAI(
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
-    base_url="https://api.deepseek.com"
-)
-
 MAX_PAGES = 50
-OUTPUT_FILE = "ragas_test_benchmark.json"
 
+OUTPUT_DIR = "../repositories/wiki_ragas"
+DOCS_DIR = os.path.join(OUTPUT_DIR, "documents")
+METADATA_FILE = os.path.join(OUTPUT_DIR, "metadata.json")
 
-# =========================
-# RAGAS PROMPTS
-# =========================
+os.makedirs(DOCS_DIR, exist_ok=True)
 
-RAGAS_QUESTION_PROMPT = """
-Your task is to formulate a question from given context satisfying the rules given below:
-
-1. The question should be fully answered from the given context.
-2. The question should be framed from a part that contains non-trivial information.
-3. The question should not contain links.
-4. The question should be of moderate difficulty.
-5. The question must be reasonable and understandable by humans.
-6. Do not use phrases such as 'provided context', 'given context', etc. in the question.
-
-Context:
-{context}
-
-Return only the question.
-"""
-
-RAGAS_ANSWER_PROMPT = """
-Answer the question using the information from the given context.
-
-Question:
-{question}
-
-Context:
-{context}
-
-Return only the answer.
-"""
+# IMPORTANT: Wikipedia requires a proper User-Agent
+HEADERS = {
+    "User-Agent": "RAGCorpusBuilder/1.0 (contact: your_email@example.com)"
+}
 
 
 # =========================
@@ -74,124 +44,120 @@ def load_wikieval_sources():
             seen.add(s)
             pages.append(s)
 
-    return pages, data
+    return pages
 
 
 # =========================
-# STEP 2: WIKIPEDIA FETCH
+# STEP 2: CLEAN FILE NAME
 # =========================
 
-def fetch_wikipedia_intro(title: str):
-    url = "https://en.wikipedia.org/api/rest_v1/page/summary/" + title.replace(" ", "_")
+def clean_filename(title):
+    return title.replace(" ", "_").replace("/", "_")[:150]
+
+
+# =========================
+# STEP 3: WIKIPEDIA FETCH (ROBUST)
+# =========================
+
+def fetch_wikipedia_page(title):
+
+    url = "https://en.wikipedia.org/w/api.php"
+
+    params = {
+        "action": "query",
+        "format": "json",
+        "titles": title,
+        "prop": "extracts",
+        "explaintext": True,
+        "redirects": 1
+    }
 
     try:
-        r = requests.get(url, timeout=10)
+        r = requests.get(url, params=params, headers=HEADERS, timeout=15)
+
         if r.status_code != 200:
+            print(f"[FAIL HTTP {r.status_code}] {title}")
             return None
 
         data = r.json()
 
+        pages = data["query"]["pages"]
+        page = next(iter(pages.values()))
+
+        text = page.get("extract", "")
+
+        if not text or len(text) < 200:
+            print(f"[EMPTY PAGE] {title}")
+            return None
+
         return {
-            "title": title,
-            "context": data.get("extract", ""),
-            "url": data.get("content_urls", {}).get("desktop", {}).get("page", "")
+            "title": page.get("title", title),
+            "text": text
         }
 
-    except Exception:
+    except Exception as e:
+        print(f"[ERROR] {title} -> {e}")
         return None
 
 
 # =========================
-# STEP 3: LLM GENERATION
+# STEP 4: SAVE DOCUMENT
 # =========================
 
-def generate_question(context: str):
-    resp = client.chat.completions.create(
-        model="deepseek-chat",
-        messages=[{
-            "role": "user",
-            "content": RAGAS_QUESTION_PROMPT.format(context=context)
-        }],
-        temperature=0.7
-    )
+def save_document(title, text, idx):
 
-    return resp.choices[0].message.content.strip()
+    filename = f"{idx}_{clean_filename(title)}.txt"
+    path = os.path.join(DOCS_DIR, filename)
 
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text)
 
-def generate_answer(context: str, question: str):
-    resp = client.chat.completions.create(
-        model="deepseek-chat",
-        messages=[{
-            "role": "user",
-            "content": RAGAS_ANSWER_PROMPT.format(
-                context=context,
-                question=question
-            )
-        }],
-        temperature=0.2
-    )
-
-    return resp.choices[0].message.content.strip()
+    return filename
 
 
 # =========================
-# STEP 4: BUILD BENCHMARK
+# STEP 5: BUILD CORPUS
 # =========================
 
-def build_benchmark(pages, max_pages=50):
-    benchmark = []
+def build_corpus(pages):
 
-    for i, title in enumerate(tqdm(pages[:max_pages])):
+    metadata = []
 
-        page_data = fetch_wikipedia_intro(title)
+    for i, title in enumerate(tqdm(pages[:MAX_PAGES])):
+
+        print(f"\n[PROCESSING] {title}")
+
+        page_data = fetch_wikipedia_page(title)
+
         if not page_data:
+            print(f"[SKIP] {title}")
             continue
 
-        context = page_data["context"]
+        file_name = save_document(page_data["title"], page_data["text"], i)
 
-        if not context or len(context) < 50:
-            continue
-
-        try:
-            question = generate_question(context)
-            answer = generate_answer(context, question)
-
-        except Exception as e:
-            print(f"[SKIP] {title}: {e}")
-            continue
-
-        benchmark.append({
+        metadata.append({
             "id": i,
-            "repo_name": "wikieval_recreated",
-            "strategy": "RAGAS",
-            "generator_model": "deepseek-chat",
-
-            "source_chunk": 0,
-            "context_length": len(context),
-
-            "chapter_name": title,
-            "wiki_url": page_data.get("url", ""),
-
-            "question": question,
-            "answer": answer,
-
-            "source_text": context,
-            "compression_stage": "none"
+            "source": title,
+            "resolved_title": page_data["title"],
+            "file": file_name,
+            "char_length": len(page_data["text"])
         })
 
-        # avoid rate limits
-        time.sleep(1)
+        print(f"[SAVED] {page_data['title']}")
 
-    return benchmark
+        time.sleep(0.5)  # polite rate limiting
+
+    return metadata
 
 
 # =========================
-# STEP 5: SAVE OUTPUT
+# STEP 6: SAVE METADATA
 # =========================
 
-def save_json(data, path):
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+def save_metadata(metadata):
+
+    with open(METADATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(metadata, f, indent=2, ensure_ascii=False)
 
 
 # =========================
@@ -201,16 +167,16 @@ def save_json(data, path):
 if __name__ == "__main__":
 
     print("Loading WikiEval dataset...")
-    pages, dataset = load_wikieval_sources()
+    pages = load_wikieval_sources()
 
-    print(f"Unique Wikipedia pages found: {len(pages)}")
+    print(f"Total unique sources: {len(pages)}")
 
-    print("Generating benchmark...")
+    print("Building RAG corpus...")
 
-    benchmark = build_benchmark(pages, MAX_PAGES)
+    metadata = build_corpus(pages)
 
-    print(f"Generated samples: {len(benchmark)}")
+    print(f"\nSuccessfully saved {len(metadata)} documents")
 
-    save_json(benchmark, OUTPUT_FILE)
+    save_metadata(metadata)
 
-    print(f"Saved to {OUTPUT_FILE}")
+    print(f"\nDONE → Output folder: {OUTPUT_DIR}")
