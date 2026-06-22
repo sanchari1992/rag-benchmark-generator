@@ -6,6 +6,9 @@ from adapters.ragify_adapter import (
     RAGifyAdapter
 )
 
+from adapters.wiki_ragas_adapter import (
+    WikiRagasAdapter
+)
 
 def load_adapter(name):
 
@@ -19,6 +22,12 @@ def load_adapter(name):
 
         return RAGifyAdapter(
             "repositories/RAGify"
+        )
+    
+    elif name.lower() == "wiki":
+
+        return WikiRagasAdapter(
+            "repositories/wiki_ragas"
         )
 
     raise ValueError(
