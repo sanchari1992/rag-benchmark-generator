@@ -31,13 +31,8 @@ class DeepSeekRAGGenerator:
         context = "\n\n".join(context_chunks[:5])  # top-k context
 
         system_prompt = (
-            "You are a precise QA system using retrieved context.\n"
-            "Rules:\n"
-            "- Answer ONLY using the provided context\n"
-            "- If answer is not in context, say: unknown\n"
-            "- No explanation\n"
-            "- No extra words\n"
-            "- Keep answer extremely concise\n"
+            "You are a helpful AI assistant.\n"
+            "Answer the user's question as accurately and clearly as possible.\n"
         )
 
         user_prompt = f"""
