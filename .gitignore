@@ -15,3 +15,5 @@
 /validate_techniques/repositories/wiki_ragas/documents
 /validate_techniques/repositories/wiki_ragas
 /repositories/wiki_ragas
+/benchmark_generation/labelers/__pycache__
+/benchmark_generation/judges/__pycache__
