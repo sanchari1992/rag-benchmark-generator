@@ -10,6 +10,10 @@ from adapters.wiki_ragas_adapter import (
     WikiRagasAdapter
 )
 
+from adapters.wizard_of_wikipedia_adapter import (
+    WizardOfWikipediaAdapter
+)
+
 def load_adapter(name):
 
     if name.lower() == "neural":
@@ -28,6 +32,12 @@ def load_adapter(name):
 
         return WikiRagasAdapter(
             "repositories/wiki_ragas"
+        )
+
+    elif name.lower() == "wizard":
+
+        return WizardOfWikipediaAdapter(
+            "repositories/DiffKS"
         )
 
     raise ValueError(

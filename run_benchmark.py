@@ -40,7 +40,8 @@ print("\n[1/4] Loading RAG adapter...")
 
 MODEL_NAME = "deepseek-chat"
 
-RAG_NAME = "wiki"
+RAG_NAME = "wizard"
+# RAG_NAME = "wiki"
 # RAG_NAME = "neural"
 # RAG_NAME = "ragify"
 
@@ -94,8 +95,8 @@ print("\n[3/4] Loading benchmark strategy...")
 
 from benchmark_generation.strategy_factory import load_strategy
 
-STRATEGY = "ragas"
-# STRATEGY = "ares"
+# STRATEGY = "ragas"
+STRATEGY = "ares"
 
 strategy = load_strategy(STRATEGY)
 
