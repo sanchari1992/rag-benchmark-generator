@@ -14,6 +14,10 @@ from adapters.wizard_of_wikipedia_adapter import (
     WizardOfWikipediaAdapter
 )
 
+from adapters.covidqa_adapter import (
+    COVIDQAAdapter
+)
+
 def load_adapter(name):
 
     if name.lower() == "neural":
@@ -38,6 +42,12 @@ def load_adapter(name):
 
         return WizardOfWikipediaAdapter(
             "repositories/DiffKS"
+        )
+
+    elif name.lower() == "covid":
+
+        return COVIDQAAdapter(
+            "repositories/COVID-QA"
         )
 
     raise ValueError(

@@ -17,3 +17,6 @@
 /repositories/wiki_ragas
 /benchmark_generation/labelers/__pycache__
 /benchmark_generation/judges/__pycache__
+/benchmark_generation/utils/__pycache__
+/benchmark_generation/prompts/datamorgana/__pycache__
+/benchmark_generation/strategies/datamorgana/__pycache__

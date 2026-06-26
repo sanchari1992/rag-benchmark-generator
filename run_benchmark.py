@@ -40,10 +40,11 @@ print("\n[1/4] Loading RAG adapter...")
 
 MODEL_NAME = "deepseek-chat"
 
-RAG_NAME = "wizard"
+# RAG_NAME = "wizard"
 # RAG_NAME = "wiki"
 # RAG_NAME = "neural"
 # RAG_NAME = "ragify"
+RAG_NAME = "covid"
 
 from adapters.factory import load_adapter
 
@@ -62,7 +63,8 @@ print(f"   - Chunks: {stats['num_chunks']}")
 SAMPLE_SIZE = compute_benchmark_size(
     num_chunks=stats["num_chunks"],
     config=DatasetSizingConfig(
-        ratio=0.05,
+        # ratio=0.05,
+        ratio=1,
         min_size=20,
         max_size=500
     )
@@ -96,7 +98,8 @@ print("\n[3/4] Loading benchmark strategy...")
 from benchmark_generation.strategy_factory import load_strategy
 
 # STRATEGY = "ragas"
-STRATEGY = "ares"
+# STRATEGY = "ares"
+STRATEGY = "datamorgana"
 
 strategy = load_strategy(STRATEGY)
 

@@ -23,12 +23,18 @@ def build_benchmark(
     for i, chunk in tqdm(enumerate(sampled), total=len(sampled)):
 
         try:
+
             question = strategy.generate_question(
-                llm, model, chunk
+                llm,
+                model,
+                chunk
             )
 
             answer = strategy.generate_answer(
-                llm, model, question, chunk
+                llm,
+                model,
+                question,
+                chunk
             )
 
             example = BenchmarkExample(
@@ -44,23 +50,44 @@ def build_benchmark(
                 source_chunk=chunk["chunk_id"],
 
                 context_length=len(chunk["text"]),
-                chapter_name=chunk.get("chapter_name",""),
+
+                chapter_name=chunk.get(
+                    "chapter_name",
+                    ""
+                ),
 
                 question=question,
 
                 answer=answer,
 
                 source_text=chunk["text"],
-                
+
                 compression_stage="none"
             )
 
-            dataset.append(example.__dict__)
+            record = example.__dict__.copy()
+
+            # Optional strategy-specific metadata
+            if hasattr(strategy, "last_metadata"):
+                record.update(strategy.last_metadata)
+
+            dataset.append(record)
 
         except Exception as e:
+
             print(f"Error at {i}: {e}")
 
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(dataset, f, indent=2, ensure_ascii=False)
+    with open(
+        output_path,
+        "w",
+        encoding="utf-8"
+    ) as f:
+
+        json.dump(
+            dataset,
+            f,
+            indent=2,
+            ensure_ascii=False
+        )
 
     return dataset

@@ -1,0 +1,74 @@
+{
+  "user_categorizations": [
+    {
+      "name": "expertise",
+      "categories": [
+        {
+          "name": "expert",
+          "probability": 0.5,
+          "description": "a specialized user with deep understanding of the topic"
+        },
+        {
+          "name": "novice",
+          "probability": 0.5,
+          "description": "a regular user with little understanding of specialized terminology"
+        }
+      ]
+    }
+  ],
+
+  "question_categorizations": [
+    {
+      "name": "factuality",
+      "categories": [
+        {
+          "name": "factoid",
+          "probability": 0.5,
+          "description": "a question seeking a specific factual answer"
+        },
+        {
+          "name": "non_factoid",
+          "probability": 0.5,
+          "description": "a question requiring explanation, reasoning, or discussion"
+        }
+      ]
+    },
+
+    {
+      "name": "complexity",
+      "categories": [
+        {
+          "name": "simple",
+          "probability": 0.5,
+          "description": "a question answerable from a single fact"
+        },
+        {
+          "name": "multi_hop",
+          "probability": 0.5,
+          "description": "a question requiring multiple pieces of information"
+        }
+      ]
+    },
+
+    {
+      "name": "intent",
+      "categories": [
+        {
+          "name": "comparison",
+          "probability": 0.33,
+          "description": "a question comparing entities or concepts"
+        },
+        {
+          "name": "reasoning",
+          "probability": 0.33,
+          "description": "a question requiring explanation"
+        },
+        {
+          "name": "instruction",
+          "probability": 0.34,
+          "description": "a question seeking guidance or instructions"
+        }
+      ]
+    }
+  ]
+}

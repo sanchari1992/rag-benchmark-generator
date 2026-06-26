@@ -6,6 +6,10 @@ from benchmark_generation.strategies.ares.strategy import (
     ARESStrategy
 )
 
+from benchmark_generation.strategies.datamorgana.strategy import (
+    DataMorganaStrategy
+)
+
 
 def load_strategy(name):
 
@@ -14,6 +18,9 @@ def load_strategy(name):
 
     if name.lower() == "ares":
         return ARESStrategy()
+    
+    if name.lower() == "datamorgana":
+        return DataMorganaStrategy()
 
     raise ValueError(
         f"Unknown strategy: {name}"
