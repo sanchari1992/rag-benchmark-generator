@@ -1,131 +1,182 @@
 """
 graph_metrics.py
 
-Entity graph metrics.
+Graph-based structural metrics for benchmark evaluation.
+
+This module assumes that each record contains a graph representation
+of entities or reasoning structure.
+
+Expected input per record:
+    record["graph"] = networkx.Graph or networkx.DiGraph
+
+If directed graphs are used, metrics are automatically converted
+to undirected where needed for consistency.
+
+Metrics implemented
+-------------------
+- Graph density
+- Average node degree
+- Graph diameter
+- Connected components
+- Average shortest path length
+- Clustering coefficient
+- Degree centralization
+
+Dependencies:
+    pip install networkx
 """
 
 import networkx as nx
-import spacy
-
-nlp = spacy.load("en_core_web_sm")
 
 
 ###########################################################
-# Utilities
+# Utility
 ###########################################################
 
-def extract_entities(text):
+def safe_graph(record):
     """
-    Returns list of named entities.
+    Retrieve graph object from record safely.
     """
-
-    if text is None:
-        return []
-
-    doc = nlp(text)
-
-    return [ent.text.strip() for ent in doc.ents]
+    return record.get("graph", None)
 
 
-def build_entity_graph(entities):
+def to_undirected(G):
     """
-    Creates a simple co-occurrence graph.
-
-    Every entity in the same text is connected.
+    Convert to undirected graph if needed.
     """
-
-    G = nx.Graph()
-
-    for entity in entities:
-        G.add_node(entity)
-
-    for i in range(len(entities)):
-        for j in range(i + 1, len(entities)):
-            G.add_edge(entities[i], entities[j])
-
+    if G is None:
+        return None
+    if G.is_directed():
+        return G.to_undirected()
     return G
 
 
 ###########################################################
-# Metrics
+# Core Metrics
 ###########################################################
 
-def entity_count(record):
+def graph_density(G):
+    if G is None or len(G) == 0:
+        return 0.0
+    return nx.density(G)
+
+
+def average_node_degree(G):
+    if G is None or len(G) == 0:
+        return 0.0
+    degrees = [deg for _, deg in G.degree()]
+    return sum(degrees) / len(degrees)
+
+
+def graph_diameter(G):
     """
-    Number of unique named entities
-    in question + answer.
+    Diameter of largest connected component.
     """
+    if G is None or len(G) == 0:
+        return 0
 
-    text = (
-        record.get("question", "")
-        + " "
-        + record.get("answer", "")
-    )
+    G = to_undirected(G)
 
-    entities = extract_entities(text)
+    if not nx.is_connected(G):
+        largest_cc = max(nx.connected_components(G), key=len)
+        subgraph = G.subgraph(largest_cc)
+    else:
+        subgraph = G
 
-    return len(set(entities))
+    try:
+        return nx.diameter(subgraph)
+    except nx.NetworkXError:
+        return 0
 
 
-def entity_density(record):
+def connected_components(G):
+    if G is None or len(G) == 0:
+        return 0
+
+    G = to_undirected(G)
+
+    return nx.number_connected_components(G)
+
+
+def average_shortest_path(G):
     """
-    Entity density =
-    unique entities / total words
+    Average shortest path over largest connected component.
     """
-
-    text = (
-        record.get("question", "")
-        + " "
-        + record.get("answer", "")
-    )
-
-    entities = extract_entities(text)
-
-    words = text.split()
-
-    if len(words) == 0:
+    if G is None or len(G) == 0:
         return 0.0
 
-    return len(set(entities)) / len(words)
+    G = to_undirected(G)
+
+    if not nx.is_connected(G):
+        largest_cc = max(nx.connected_components(G), key=len)
+        subgraph = G.subgraph(largest_cc)
+    else:
+        subgraph = G
+
+    try:
+        return nx.average_shortest_path_length(subgraph)
+    except nx.NetworkXError:
+        return 0.0
+
+
+def clustering_coefficient(G):
+    if G is None or len(G) == 0:
+        return 0.0
+    G = to_undirected(G)
+    return nx.average_clustering(G)
 
 
 ###########################################################
-# Optional graph object
+# Degree Centralization
 ###########################################################
 
-def entity_graph(record):
+def degree_centralization(G):
     """
-    Build entity graph.
-
-    Not written into JSON because NetworkX
-    objects aren't serializable, but future
-    metrics can use it.
+    Freeman degree centralization:
+    measures inequality of node degrees.
     """
+    if G is None or len(G) == 0:
+        return 0.0
 
-    text = (
-        record.get("question", "")
-        + " "
-        + record.get("answer", "")
-    )
+    degrees = [deg for _, deg in G.degree()]
+    n = len(degrees)
 
-    entities = extract_entities(text)
+    if n <= 2:
+        return 0.0
 
-    return build_entity_graph(entities)
+    max_deg = max(degrees)
+
+    numerator = sum(max_deg - d for d in degrees)
+    denominator = (n - 1) * (n - 2)
+
+    if denominator == 0:
+        return 0.0
+
+    return numerator / denominator
 
 
 ###########################################################
-# Compute
+# Main Compute Function
 ###########################################################
 
 def compute(records):
+    """
+    Compute graph metrics for each record.
+    """
 
     for record in records:
 
-        record["entity_count"] = entity_count(record)
+        G = safe_graph(record)
 
-        record["entity_density"] = round(
-            entity_density(record),
-            4,
-        )
+        # -------------------------
+        # Global structure metrics
+        # -------------------------
+        record["graph_density"] = graph_density(G)
+        record["average_node_degree"] = average_node_degree(G)
+        record["graph_diameter"] = graph_diameter(G)
+        record["connected_components"] = connected_components(G)
+        record["average_shortest_path"] = average_shortest_path(G)
+        record["clustering_coefficient"] = clustering_coefficient(G)
+        record["degree_centralization"] = degree_centralization(G)
 
     return records
