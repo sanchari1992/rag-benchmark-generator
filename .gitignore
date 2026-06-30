@@ -23,3 +23,5 @@
 /benchmark_generation/metrics/__pycache__
 /benchmark_generation/strategies/deepeval/__pycache__
 /repositories
+/metric_evals
+/rank_results
