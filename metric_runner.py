@@ -16,6 +16,7 @@ import numbers
 from benchmark_generation.metrics import lexical_metrics
 from benchmark_generation.metrics import readability_metrics
 from benchmark_generation.metrics import syntax_metrics
+from benchmark_generation.metrics import semantic_metrics
 from benchmark_generation.metrics import graph_metrics
 
 
@@ -27,6 +28,7 @@ METRIC_MODULES = [
     lexical_metrics,
     readability_metrics,
     syntax_metrics,
+    semantic_metrics,
     graph_metrics,
 ]
 

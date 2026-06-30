@@ -27,6 +27,7 @@ Dependencies:
 """
 
 import networkx as nx
+from benchmark_generation.metrics.entity_graph_builder import build_entity_graph
 
 
 ###########################################################
@@ -166,7 +167,7 @@ def compute(records):
 
     for record in records:
 
-        G = safe_graph(record)
+        G = build_entity_graph(record["question"])
 
         # -------------------------
         # Global structure metrics
