@@ -19,7 +19,7 @@ class WikiRagasAdapter(BaseAdapter):
 
         self.docs_path = self.repo_path / "documents"
 
-        self.embedding_model = SentenceTransformer("all-mpnet-base-v2")
+        self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
         self.chunks = self._load_and_chunk_documents()
 

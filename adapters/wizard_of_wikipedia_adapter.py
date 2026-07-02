@@ -28,7 +28,7 @@ class WizardOfWikipediaAdapter(BaseAdapter):
             / "wizard_of_wikipedia_train"
         )
 
-        self.embedding_model_name = "all-mpnet-base-v2"
+        self.embedding_model_name = "all-MiniLM-L6-v2"
 
         self.embedding_model = SentenceTransformer(
             self.embedding_model_name

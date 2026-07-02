@@ -24,7 +24,7 @@ class COVIDQAAdapter(BaseAdapter):
 
         self.embedding_model = (
             SentenceTransformer(
-                "all-mpnet-base-v2"
+                "all-MiniLM-L6-v2"
             )
         )
 
