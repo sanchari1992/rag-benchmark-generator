@@ -40,9 +40,9 @@ print("\n[1/4] Loading RAG adapter...")
 
 MODEL_NAME = "deepseek-chat"
 
-RAG_NAME = "neural"
+# RAG_NAME = "neural"
 # RAG_NAME = "ragify"
-# RAG_NAME = "wizard"
+RAG_NAME = "wizard"
 # RAG_NAME = "wiki"
 # RAG_NAME = "covid"
 
