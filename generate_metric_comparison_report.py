@@ -27,24 +27,34 @@ import pandas as pd
 
 # Human-generated benchmark files
 HUMAN_FILES = {
-    "Human1": "metrics_results\human_generated_examples\neural\summary_metrics.json",
-    "Human2": "metrics_results\human_generated_examples\ragify\summary_metrics.json",
-    "Human3": "metrics_results\human_generated_examples\wizard\summary_metrics.json",
-    "Human4": "metrics_results\human_generated_examples\wiki\summary_metrics.json",
-    "Human5": "metrics_results\human_generated_examples\covid\summary_metrics.json"
+    "Human_neural": "metrics_results/human_generated_examples/neural/summary_metrics.json",
+    "Human_ragify": "metrics_results/human_generated_examples/ragify/summary_metrics.json",
+    "Human_wizard": "metrics_results/human_generated_examples/wizard/summary_metrics.json",
+    "Human_wiki": "metrics_results/human_generated_examples/wiki/summary_metrics.json",
+    "Human_covid": "metrics_results/human_generated_examples/covid/summary_metrics.json"
 }
 
 # Existing benchmark files
 OTHER_FILES = {
-    "RAGAS": "ragas.json",
-    "ARES": "ares.json",
-    "DataMorgana": "datamorgana.json",
-    "DeepEval": "deepeval.json",
-    "Neural": "neural.json",
+    "RAGAS_neural": "metrics_results/ragas/neural/run_20260701_102824/summary_metrics.json",
+    "RAGAS_ragify": "metrics_results/ragas/ragify/run_20260701_104134/summary_metrics.json",
+    "RAGAS_wizard": "metrics_results/ragas/wizard/run_20260701_153830/summary_metrics.json",
+    "RAGAS_wiki": "metrics_results/ragas/wiki/run_20260622_112350/summary_metrics.json",
+    "RAGAS_covid": "metrics_results/ragas/covid/run_20260701_211157/summary_metrics.json",
+
+    "ARES_neural": "metrics_results/ares/neural/run_20260702_095714/summary_metrics.json",
+    "ARES_ragify": "metrics_results/ares/ragify/run_20260702_100408/summary_metrics.json",
+    "ARES_wizard": "metrics_results/ares/wizard/run_20260702_105354/summary_metrics.json",
+    "ARES_wiki": "metrics_results/ares/wiki/run_20260702_130521/summary_metrics.json",
+    "ARES_covid": "metrics_results/ares/covid/run_20260702_131802/summary_metrics.json",
+
+    # "DataMorgana": "datamorgana.json",
+    # "DeepEval": "deepeval.json",
+    # "Neural": "neural.json",
 }
 
 # Output CSV
-OUTPUT_CSV = "metric_comparison_report.csv"
+OUTPUT_CSV = "metrics_results/metric_comparison_report.csv"
 
 ##########################################################
 
