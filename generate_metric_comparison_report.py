@@ -48,6 +48,18 @@ OTHER_FILES = {
     "ARES_wiki": "metrics_results/ares/wiki/run_20260702_130521/summary_metrics.json",
     "ARES_covid": "metrics_results/ares/covid/run_20260702_131802/summary_metrics.json",
 
+    "DATAMORGANA_neural": "metrics_results/datamorgana/neural/run_20260702_132618/summary_metrics.json",
+    "DATAMORGANA_ragify": "metrics_results/datamorgana/ragify/run_20260702_133302/summary_metrics.json",
+    "DATAMORGANA_wizard": "metrics_results/datamorgana/wizard/run_20260702_143452/summary_metrics.json",
+    "DATAMORGANA_wiki": "metrics_results/datamorgana/wiki/run_20260702_133712/summary_metrics.json",
+    "DATAMORGANA_covid": "metrics_results/datamorgana/covid/run_20260702_135115/summary_metrics.json",
+
+    "DEEPEVAL_neural": "metrics_results/deepeval/neural/run_20260704_172651/summary_metrics.json",
+    "DEEPEVAL_ragify": "metrics_results/deepeval/ragify/run_20260706_125857/summary_metrics.json",
+    "DEEPEVAL_wizard": "metrics_results/deepeval/wizard/run_20260707_153502/summary_metrics.json",
+    "DEEPEVAL_wiki": "metrics_results/deepeval/wiki/run_20260706_132334/summary_metrics.json",
+    "DEEPEVAL_covid": "metrics_results/deepeval/covid/run_20260707_140000/summary_metrics.json",
+
     # "DataMorgana": "datamorgana.json",
     # "DeepEval": "deepeval.json",
     # "Neural": "neural.json",
