@@ -60,9 +60,6 @@ OTHER_FILES = {
     "DEEPEVAL_wiki": "metrics_results/deepeval/wiki/run_20260706_132334/summary_metrics.json",
     "DEEPEVAL_covid": "metrics_results/deepeval/covid/run_20260707_140000/summary_metrics.json",
 
-    # "DataMorgana": "datamorgana.json",
-    # "DeepEval": "deepeval.json",
-    # "Neural": "neural.json",
 }
 
 # Output CSV
