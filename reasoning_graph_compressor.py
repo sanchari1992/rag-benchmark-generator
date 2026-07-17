@@ -1,6 +1,7 @@
 import json
 import argparse
 import hashlib
+
 import numpy as np
 
 from tqdm import tqdm
@@ -12,16 +13,47 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import normalize
 
 
-# -----------------------------
+# =====================================================
 # Load NLP model
-# -----------------------------
+# =====================================================
 
 nlp = spacy.load("en_core_web_sm")
 
 
-# -----------------------------
-# Extract reasoning graph
-# -----------------------------
+# =====================================================
+# Robust JSON loader
+# =====================================================
+
+def load_json(filename):
+
+    encodings = [
+        "utf-8",
+        "utf-8-sig",
+        "latin-1"
+    ]
+
+    for enc in encodings:
+
+        try:
+            with open(
+                filename,
+                "r",
+                encoding=enc
+            ) as f:
+                return json.load(f)
+
+        except UnicodeDecodeError:
+            continue
+
+    raise ValueError(
+        "Could not decode JSON file"
+    )
+
+
+
+# =====================================================
+# Reasoning Graph Construction
+# =====================================================
 
 def build_reasoning_graph(question, answer):
 
@@ -31,30 +63,52 @@ def build_reasoning_graph(question, answer):
 
     G = nx.Graph()
 
-    entities = []
 
-    # Entity nodes
+    # -------------------------
+    # Add entity nodes
+    # -------------------------
+
     for ent in doc.ents:
+
         node = ent.text.lower().strip()
-        entities.append(node)
 
         G.add_node(
             node,
-            type="entity",
+            node_type="entity",
             label=ent.label_
         )
 
 
-    # Dependency based relations
+    # -------------------------
+    # Add dependency relations
+    # -------------------------
+
     for token in doc:
 
-        if token.dep_ in ["nsubj", "dobj", "pobj"]:
+
+        if token.dep_ in [
+            "nsubj",
+            "dobj",
+            "pobj",
+            "attr",
+            "compound"
+        ]:
 
             head = token.head.text.lower()
+
             child = token.text.lower()
 
-            G.add_node(head, type="concept")
-            G.add_node(child, type="concept")
+
+            G.add_node(
+                head,
+                node_type="concept"
+            )
+
+            G.add_node(
+                child,
+                node_type="concept"
+            )
+
 
             G.add_edge(
                 head,
@@ -63,14 +117,27 @@ def build_reasoning_graph(question, answer):
             )
 
 
-    # If no edges, create semantic fallback graph
-    if G.number_of_edges() == 0:
+    # -------------------------
+    # Fallback graph
+    # -------------------------
+
+    if G.number_of_nodes()==0:
 
         words = [
-            t.lemma_.lower()
-            for t in doc
-            if not t.is_stop and t.is_alpha
+            token.lemma_.lower()
+            for token in doc
+            if token.is_alpha
+            and not token.is_stop
         ]
+
+
+        for word in words:
+
+            G.add_node(
+                word,
+                node_type="concept"
+            )
+
 
         for i in range(len(words)-1):
 
@@ -85,77 +152,154 @@ def build_reasoning_graph(question, answer):
 
 
 
-# -----------------------------
-# Graph feature extraction
-# -----------------------------
+# =====================================================
+# Fixed length graph fingerprint
+# =====================================================
+
+def graph_hash_embedding(G, size=16):
+
+    graph_hash = nx.weisfeiler_lehman_graph_hash(G)
+
+
+    digest = hashlib.sha256(
+        graph_hash.encode()
+    ).digest()
+
+
+    vector = np.frombuffer(
+        digest,
+        dtype=np.uint8
+    )
+
+
+    return vector[:size] / 255.0
+
+
+
+# =====================================================
+# Graph Feature Extraction
+# =====================================================
 
 def graph_features(G):
 
-    features = []
+    features=[]
 
-    # number of nodes
-    features.append(G.number_of_nodes())
 
-    # number of edges
-    features.append(G.number_of_edges())
+    # basic size
+
+    features.append(
+        G.number_of_nodes()
+    )
+
+
+    features.append(
+        G.number_of_edges()
+    )
+
 
     # density
-    features.append(nx.density(G))
+
+    features.append(
+        nx.density(G)
+    )
 
 
-    # average degree
+    # degree
 
     if G.number_of_nodes()>0:
-        avg_degree = sum(
-            dict(G.degree()).values()
-        ) / G.number_of_nodes()
+
+        avg_degree = (
+            sum(dict(G.degree()).values())
+            /
+            G.number_of_nodes()
+        )
+
     else:
+
         avg_degree=0
 
-    features.append(avg_degree)
+
+    features.append(
+        avg_degree
+    )
 
 
     # clustering coefficient
 
+    if G.number_of_nodes()>1:
+
+        clustering = nx.average_clustering(G)
+
+    else:
+
+        clustering=0
+
+
     features.append(
-        nx.average_clustering(G)
-        if G.number_of_nodes()>1
-        else 0
+        clustering
     )
 
 
-    # graph hash
-    wl_hash = nx.weisfeiler_lehman_graph_hash(G)
+    # connected components
 
-    # convert hash to numbers
-    hash_vector = [
-        int(wl_hash[i:i+4],16)
-        for i in range(0,len(wl_hash),4)
-    ]
-
-    features.extend(hash_vector)
+    features.append(
+        nx.number_connected_components(G)
+    )
 
 
-    return features
+    # shortest path
+
+    if (
+        G.number_of_nodes()>1
+        and nx.is_connected(G)
+    ):
+
+        avg_path = nx.average_shortest_path_length(G)
+
+    else:
+
+        avg_path=0
+
+
+    features.append(
+        avg_path
+    )
+
+
+    # graph hash embedding
+
+    features.extend(
+        graph_hash_embedding(G)
+    )
+
+
+    return np.array(
+        features,
+        dtype=float
+    )
 
 
 
-# -----------------------------
-# Select representative question
-# -----------------------------
+# =====================================================
+# Select cluster representative
+# =====================================================
 
 def select_medoid(indices, embeddings):
 
-    cluster_vectors = embeddings[indices]
+
+    vectors = embeddings[
+        indices
+    ]
+
 
     centroid = np.mean(
-        cluster_vectors,
+        vectors,
         axis=0
     )
 
 
     distances = np.linalg.norm(
-        cluster_vectors-centroid,
+        vectors-centroid,
         axis=1
     )
 
@@ -166,9 +310,9 @@ def select_medoid(indices, embeddings):
 
 
 
-# -----------------------------
-# Main compressor
-# -----------------------------
+# =====================================================
+# Compression
+# =====================================================
 
 def compress_dataset(
         input_file,
@@ -176,44 +320,61 @@ def compress_dataset(
         n_clusters
 ):
 
-    with open(input_file,"r") as f:
-        data=json.load(f)
+
+    data = load_json(
+        input_file
+    )
 
 
     graphs=[]
+
     features=[]
 
 
-    print("Building reasoning graphs...")
+    print(
+        "Building reasoning graphs..."
+    )
 
 
     for item in tqdm(data):
 
-        G=build_reasoning_graph(
+
+        G = build_reasoning_graph(
             item["question"],
             item["answer"]
         )
 
+
         graphs.append(G)
+
 
         features.append(
             graph_features(G)
         )
 
 
-    X=np.array(features)
 
-    X=np.nan_to_num(X)
+    X=np.vstack(features)
 
-    X=normalize(X)
+
+    X=np.nan_to_num(
+        X
+    )
+
+
+    X=normalize(
+        X
+    )
 
 
 
     # -------------------------
-    # Clustering
+    # clustering
     # -------------------------
 
-    print("Clustering graphs...")
+    print(
+        "Clustering reasoning graphs..."
+    )
 
 
     k=min(
@@ -225,11 +386,13 @@ def compress_dataset(
     model=KMeans(
         n_clusters=k,
         random_state=42,
-        n_init=10
+        n_init=20
     )
 
 
-    labels=model.fit_predict(X)
+    labels=model.fit_predict(
+        X
+    )
 
 
 
@@ -250,35 +413,62 @@ def compress_dataset(
 
 
     # -------------------------
-    # Pick representatives
+    # Select representatives
     # -------------------------
 
     compressed=[]
 
 
+    cluster_information={}
+
+
     for cluster_id,indices in clusters.items():
+
 
         representative = select_medoid(
             indices,
             X
         )
 
-        item=data[representative].copy()
+
+        item=data[
+            representative
+        ].copy()
+
 
         item["cluster_id"]=cluster_id
 
         item["cluster_size"]=len(indices)
 
-        item["reasoning_graph_nodes"]=graphs[
-            representative
-        ].number_of_nodes()
 
-        item["reasoning_graph_edges"]=graphs[
-            representative
-        ].number_of_edges()
+        item["reasoning_graph_nodes"]=(
+            graphs[representative]
+            .number_of_nodes()
+        )
 
 
-        compressed.append(item)
+        item["reasoning_graph_edges"]=(
+            graphs[representative]
+            .number_of_edges()
+        )
+
+
+        compressed.append(
+            item
+        )
+
+
+        cluster_information[
+            cluster_id
+        ]={
+
+            "size":len(indices),
+
+            "members":indices,
+
+            "representative":
+                representative
+        }
 
 
 
@@ -292,22 +482,23 @@ def compress_dataset(
 
 
     compression_ratio=(
-        1-
+
+        1 -
         compressed_size/original_size
+
     )*100
 
 
 
-    # graph coverage
+    original_patterns=set()
 
-    original_graph_patterns=set()
+    compressed_patterns=set()
 
-    compressed_graph_patterns=set()
 
 
     for G in graphs:
 
-        original_graph_patterns.add(
+        original_patterns.add(
             nx.weisfeiler_lehman_graph_hash(G)
         )
 
@@ -319,47 +510,65 @@ def compress_dataset(
             item["answer"]
         )
 
-        compressed_graph_patterns.add(
+
+        compressed_patterns.add(
             nx.weisfeiler_lehman_graph_hash(G)
         )
 
 
+
     coverage=(
-        len(compressed_graph_patterns)
+
+        len(compressed_patterns)
         /
-        len(original_graph_patterns)
+        len(original_patterns)
+
     )*100
 
 
 
     result={
 
+
         "metrics":{
 
             "original_questions":
                 original_size,
 
+
             "compressed_questions":
                 compressed_size,
 
+
             "compression_ratio_percent":
-                round(compression_ratio,2),
+                round(
+                    compression_ratio,
+                    2
+                ),
+
 
             "number_of_clusters":
                 len(clusters),
 
+
             "unique_original_reasoning_graphs":
-                len(original_graph_patterns),
+                len(original_patterns),
+
 
             "unique_compressed_reasoning_graphs":
-                len(compressed_graph_patterns),
+                len(compressed_patterns),
+
 
             "graph_coverage_percent":
-                round(coverage,2)
+                round(
+                    coverage,
+                    2
+                )
         },
 
 
-        "clusters":clusters,
+        "clusters":
+            cluster_information,
 
 
         "compressed_dataset":
@@ -368,27 +577,39 @@ def compress_dataset(
     }
 
 
-    with open(output_file,"w") as f:
+
+    with open(
+        output_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
+
         json.dump(
             result,
             f,
-            indent=4
+            indent=4,
+            ensure_ascii=False
         )
 
 
-    print("\nDone!")
-    print(json.dumps(
-        result["metrics"],
-        indent=4
-    ))
+
+    print("\nCompression Complete")
+
+    print(
+        json.dumps(
+            result["metrics"],
+            indent=4
+        )
+    )
 
 
 
-# -----------------------------
+# =====================================================
 # CLI
-# -----------------------------
+# =====================================================
 
 if __name__=="__main__":
+
 
     parser=argparse.ArgumentParser(
         description=
@@ -416,6 +637,7 @@ if __name__=="__main__":
 
 
     args=parser.parse_args()
+
 
 
     compress_dataset(
