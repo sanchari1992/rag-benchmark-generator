@@ -130,6 +130,13 @@ Evaluation metrics (evalmetrics.json)
 Planned extensions include:
 
 Benchmark compression strategies
+reasoning_graph_compressor.py
+
+python reasoning_graph_compressor.py \
+    --input abc.json \
+    --output xyz.json \
+    --clusters 20
+
 Multi-strategy QA generation (beyond RAGAS-style prompting)
 RAG robustness evaluation (hallucination + faithfulness metrics)
 Cross-corpus generalization testing
