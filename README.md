@@ -133,9 +133,10 @@ Benchmark compression strategies
 reasoning_graph_compressor.py
 
 python greedy_reasoning_graph_coreset.py \
- --input abc.json \
- --output compressed.json \
- --coverage 0.95
+    --input abc.json \
+    --output compressed_benchmark.json \
+    --report compression_report.json \
+    --coverage 0.95
 
 Multi-strategy QA generation (beyond RAGAS-style prompting)
 RAG robustness evaluation (hallucination + faithfulness metrics)
