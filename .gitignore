@@ -27,3 +27,7 @@
 /rank_results
 /metrics_results
 /compressed_benchmarks
+/coreset_benchmarks
+/union_benchmarks
+/v3_benchmarks
+/__pycache__

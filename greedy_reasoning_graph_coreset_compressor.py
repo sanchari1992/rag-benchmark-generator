@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-greedy_reasoning_graph_coreset.py
+greedy_reasoning_graph_coreset_compressor.py
 
 Provable coreset compression for RAG question benchmarks.
 
