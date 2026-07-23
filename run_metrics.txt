@@ -1,0 +1,690 @@
+
+================================================================================
+timestamp: 2026-07-21T21:56:06.171601
+benchmark_file: .\union_benchmarks\ratio_100\neural_benchmark.json
+output_file: .\union_benchmarks\ratio_100\results\neural_benchmark.json
+rag_system: neural
+llm_model: deepseek-chat
+questions_processed: 882
+total_runtime_seconds: 4740.161
+average_runtime_per_question_seconds: 5.374
+average_retrieval_time_seconds: 2.627
+average_generation_time_seconds: 2.745
+total_input_tokens: 14924251
+total_output_tokens: 124068
+total_tokens: 15048319
+average_input_tokens_per_question: 16920.92
+average_output_tokens_per_question: 140.67
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-21T22:19:12.963150
+benchmark_file: .\union_benchmarks\ratio_100\ragify_benchmark.json
+output_file: .\union_benchmarks\ratio_100\results\ragify_benchmark.json
+rag_system: ragify
+llm_model: deepseek-chat
+questions_processed: 39
+total_runtime_seconds: 70.472
+average_runtime_per_question_seconds: 1.807
+average_retrieval_time_seconds: 0.014
+average_generation_time_seconds: 1.74
+total_input_tokens: 37194
+total_output_tokens: 3640
+total_tokens: 40834
+average_input_tokens_per_question: 953.69
+average_output_tokens_per_question: 93.33
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T00:14:47.024735
+benchmark_file: .\union_benchmarks\ratio_100\wizard_benchmark.json
+output_file: .\union_benchmarks\ratio_100\results\wizard_benchmark.json
+rag_system: wizard
+llm_model: deepseek-chat
+questions_processed: 3000
+total_runtime_seconds: 6873.407
+average_runtime_per_question_seconds: 2.291
+average_retrieval_time_seconds: 0.115
+average_generation_time_seconds: 1.422
+total_input_tokens: 540332
+total_output_tokens: 205721
+total_tokens: 746053
+average_input_tokens_per_question: 180.11
+average_output_tokens_per_question: 68.57
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T02:52:12.685060
+benchmark_file: .\union_benchmarks\ratio_100\wiki_benchmark.json
+output_file: .\union_benchmarks\ratio_100\results\wiki_benchmark.json
+rag_system: wiki
+llm_model: deepseek-chat
+questions_processed: 3000
+total_runtime_seconds: 5471.522
+average_runtime_per_question_seconds: 1.824
+average_retrieval_time_seconds: 0.011
+average_generation_time_seconds: 1.805
+total_input_tokens: 2229984
+total_output_tokens: 306724
+total_tokens: 2536708
+average_input_tokens_per_question: 743.33
+average_output_tokens_per_question: 102.24
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T04:27:17.317465
+benchmark_file: .\union_benchmarks\ratio_100\covid_benchmark.json
+output_file: .\union_benchmarks\ratio_100\results\covid_benchmark.json
+rag_system: covid
+llm_model: deepseek-chat
+questions_processed: 441
+total_runtime_seconds: 1778.293
+average_runtime_per_question_seconds: 4.032
+average_retrieval_time_seconds: 0.011
+average_generation_time_seconds: 4.009
+total_input_tokens: 12631712
+total_output_tokens: 121897
+total_tokens: 12753609
+average_input_tokens_per_question: 28643.34
+average_output_tokens_per_question: 276.41
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T06:27:20.677396
+benchmark_file: .\union_benchmarks\ratio_90\neural_benchmark.json
+output_file: .\union_benchmarks\ratio_90\results\neural_benchmark.json
+rag_system: neural
+llm_model: deepseek-chat
+questions_processed: 794
+total_runtime_seconds: 3808.098
+average_runtime_per_question_seconds: 4.796
+average_retrieval_time_seconds: 2.33
+average_generation_time_seconds: 2.464
+total_input_tokens: 13436301
+total_output_tokens: 115371
+total_tokens: 13551672
+average_input_tokens_per_question: 16922.29
+average_output_tokens_per_question: 145.3
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T06:49:51.485063
+benchmark_file: .\union_benchmarks\ratio_90\ragify_benchmark.json
+output_file: .\union_benchmarks\ratio_90\results\ragify_benchmark.json
+rag_system: ragify
+llm_model: deepseek-chat
+questions_processed: 36
+total_runtime_seconds: 60.685
+average_runtime_per_question_seconds: 1.686
+average_retrieval_time_seconds: 0.01
+average_generation_time_seconds: 1.619
+total_input_tokens: 34498
+total_output_tokens: 3526
+total_tokens: 38024
+average_input_tokens_per_question: 958.28
+average_output_tokens_per_question: 97.94
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T08:40:11.839153
+benchmark_file: .\union_benchmarks\ratio_90\wizard_benchmark.json
+output_file: .\union_benchmarks\ratio_90\results\wizard_benchmark.json
+rag_system: wizard
+llm_model: deepseek-chat
+questions_processed: 2700
+total_runtime_seconds: 6552.703
+average_runtime_per_question_seconds: 2.427
+average_retrieval_time_seconds: 0.112
+average_generation_time_seconds: 1.55
+total_input_tokens: 489382
+total_output_tokens: 193281
+total_tokens: 682663
+average_input_tokens_per_question: 181.25
+average_output_tokens_per_question: 71.59
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T11:05:00.961332
+benchmark_file: .\union_benchmarks\ratio_90\wiki_benchmark.json
+output_file: .\union_benchmarks\ratio_90\results\wiki_benchmark.json
+rag_system: wiki
+llm_model: deepseek-chat
+questions_processed: 2700
+total_runtime_seconds: 4854.217
+average_runtime_per_question_seconds: 1.798
+average_retrieval_time_seconds: 0.011
+average_generation_time_seconds: 1.778
+total_input_tokens: 2012324
+total_output_tokens: 281119
+total_tokens: 2293443
+average_input_tokens_per_question: 745.31
+average_output_tokens_per_question: 104.12
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T12:40:44.710978
+benchmark_file: .\union_benchmarks\ratio_90\covid_benchmark.json
+output_file: .\union_benchmarks\ratio_90\results\covid_benchmark.json
+rag_system: covid
+llm_model: deepseek-chat
+questions_processed: 397
+total_runtime_seconds: 1629.455
+average_runtime_per_question_seconds: 4.104
+average_retrieval_time_seconds: 0.011
+average_generation_time_seconds: 4.08
+total_input_tokens: 11492748
+total_output_tokens: 112830
+total_tokens: 11605578
+average_input_tokens_per_question: 28948.99
+average_output_tokens_per_question: 284.21
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T13:47:00.204441
+benchmark_file: .\union_benchmarks\ratio_75\neural_benchmark.json
+output_file: .\union_benchmarks\ratio_75\results\neural_benchmark.json
+rag_system: neural
+llm_model: deepseek-chat
+questions_processed: 662
+total_runtime_seconds: 3249.878
+average_runtime_per_question_seconds: 4.909
+average_retrieval_time_seconds: 2.377
+average_generation_time_seconds: 2.53
+total_input_tokens: 11192495
+total_output_tokens: 94695
+total_tokens: 11287190
+average_input_tokens_per_question: 16907.09
+average_output_tokens_per_question: 143.04
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T14:07:58.475856
+benchmark_file: .\union_benchmarks\ratio_75\ragify_benchmark.json
+output_file: .\union_benchmarks\ratio_75\results\ragify_benchmark.json
+rag_system: ragify
+llm_model: deepseek-chat
+questions_processed: 30
+total_runtime_seconds: 54.83
+average_runtime_per_question_seconds: 1.828
+average_retrieval_time_seconds: 0.01
+average_generation_time_seconds: 1.745
+total_input_tokens: 28722
+total_output_tokens: 3255
+total_tokens: 31977
+average_input_tokens_per_question: 957.4
+average_output_tokens_per_question: 108.5
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T15:46:35.622428
+benchmark_file: .\union_benchmarks\ratio_75\wizard_benchmark.json
+output_file: .\union_benchmarks\ratio_75\results\wizard_benchmark.json
+rag_system: wizard
+llm_model: deepseek-chat
+questions_processed: 2250
+total_runtime_seconds: 5864.674
+average_runtime_per_question_seconds: 2.607
+average_retrieval_time_seconds: 0.115
+average_generation_time_seconds: 1.572
+total_input_tokens: 408341
+total_output_tokens: 167869
+total_tokens: 576210
+average_input_tokens_per_question: 181.48
+average_output_tokens_per_question: 74.61
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T17:47:14.236482
+benchmark_file: .\union_benchmarks\ratio_75\wiki_benchmark.json
+output_file: .\union_benchmarks\ratio_75\results\wiki_benchmark.json
+rag_system: wiki
+llm_model: deepseek-chat
+questions_processed: 2250
+total_runtime_seconds: 4088.886
+average_runtime_per_question_seconds: 1.817
+average_retrieval_time_seconds: 0.012
+average_generation_time_seconds: 1.793
+total_input_tokens: 1679491
+total_output_tokens: 238668
+total_tokens: 1918159
+average_input_tokens_per_question: 746.44
+average_output_tokens_per_question: 106.07
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T19:02:58.326498
+benchmark_file: .\union_benchmarks\ratio_75\covid_benchmark.json
+output_file: .\union_benchmarks\ratio_75\results\covid_benchmark.json
+rag_system: covid
+llm_model: deepseek-chat
+questions_processed: 331
+total_runtime_seconds: 1318.445
+average_runtime_per_question_seconds: 3.983
+average_retrieval_time_seconds: 0.011
+average_generation_time_seconds: 3.955
+total_input_tokens: 9499193
+total_output_tokens: 93952
+total_tokens: 9593145
+average_input_tokens_per_question: 28698.47
+average_output_tokens_per_question: 283.84
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T19:47:16.497285
+benchmark_file: .\union_benchmarks\ratio_50\neural_benchmark.json
+output_file: .\union_benchmarks\ratio_50\results\neural_benchmark.json
+rag_system: neural
+llm_model: deepseek-chat
+questions_processed: 441
+total_runtime_seconds: 2084.816
+average_runtime_per_question_seconds: 4.727
+average_retrieval_time_seconds: 2.267
+average_generation_time_seconds: 2.458
+total_input_tokens: 7446779
+total_output_tokens: 61359
+total_tokens: 7508138
+average_input_tokens_per_question: 16886.12
+average_output_tokens_per_question: 139.14
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T19:59:04.014916
+benchmark_file: .\union_benchmarks\ratio_50\ragify_benchmark.json
+output_file: .\union_benchmarks\ratio_50\results\ragify_benchmark.json
+rag_system: ragify
+llm_model: deepseek-chat
+questions_processed: 20
+total_runtime_seconds: 41.154
+average_runtime_per_question_seconds: 2.058
+average_retrieval_time_seconds: 0.009
+average_generation_time_seconds: 1.95
+total_input_tokens: 19249
+total_output_tokens: 2347
+total_tokens: 21596
+average_input_tokens_per_question: 962.45
+average_output_tokens_per_question: 117.35
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T21:16:34.807511
+benchmark_file: .\union_benchmarks\ratio_50\wizard_benchmark.json
+output_file: .\union_benchmarks\ratio_50\results\wizard_benchmark.json
+rag_system: wizard
+llm_model: deepseek-chat
+questions_processed: 1500
+total_runtime_seconds: 4613.602
+average_runtime_per_question_seconds: 3.076
+average_retrieval_time_seconds: 0.114
+average_generation_time_seconds: 1.502
+total_input_tokens: 271084
+total_output_tokens: 113808
+total_tokens: 384892
+average_input_tokens_per_question: 180.72
+average_output_tokens_per_question: 75.87
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T22:37:39.810721
+benchmark_file: .\union_benchmarks\ratio_50\wiki_benchmark.json
+output_file: .\union_benchmarks\ratio_50\results\wiki_benchmark.json
+rag_system: wiki
+llm_model: deepseek-chat
+questions_processed: 1500
+total_runtime_seconds: 2685.342
+average_runtime_per_question_seconds: 1.79
+average_retrieval_time_seconds: 0.012
+average_generation_time_seconds: 1.756
+total_input_tokens: 1113849
+total_output_tokens: 155701
+total_tokens: 1269550
+average_input_tokens_per_question: 742.57
+average_output_tokens_per_question: 103.8
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T23:27:54.608189
+benchmark_file: .\union_benchmarks\ratio_50\covid_benchmark.json
+output_file: .\union_benchmarks\ratio_50\results\covid_benchmark.json
+rag_system: covid
+llm_model: deepseek-chat
+questions_processed: 221
+total_runtime_seconds: 891.02
+average_runtime_per_question_seconds: 4.032
+average_retrieval_time_seconds: 0.011
+average_generation_time_seconds: 3.997
+total_input_tokens: 6459131
+total_output_tokens: 60940
+total_tokens: 6520071
+average_input_tokens_per_question: 29226.84
+average_output_tokens_per_question: 275.75
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T23:52:11.494208
+benchmark_file: .\union_benchmarks\ratio_25\neural_benchmark.json
+output_file: .\union_benchmarks\ratio_25\results\neural_benchmark.json
+rag_system: neural
+llm_model: deepseek-chat
+questions_processed: 221
+total_runtime_seconds: 1066.727
+average_runtime_per_question_seconds: 4.827
+average_retrieval_time_seconds: 2.273
+average_generation_time_seconds: 2.549
+total_input_tokens: 3728220
+total_output_tokens: 32562
+total_tokens: 3760782
+average_input_tokens_per_question: 16869.77
+average_output_tokens_per_question: 147.34
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-22T23:58:07.817630
+benchmark_file: .\union_benchmarks\ratio_25\ragify_benchmark.json
+output_file: .\union_benchmarks\ratio_25\results\ragify_benchmark.json
+rag_system: ragify
+llm_model: deepseek-chat
+questions_processed: 10
+total_runtime_seconds: 21.635
+average_runtime_per_question_seconds: 2.163
+average_retrieval_time_seconds: 0.009
+average_generation_time_seconds: 1.953
+total_input_tokens: 9460
+total_output_tokens: 1401
+total_tokens: 10861
+average_input_tokens_per_question: 946.0
+average_output_tokens_per_question: 140.1
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-23T00:51:30.165143
+benchmark_file: .\union_benchmarks\ratio_25\wizard_benchmark.json
+output_file: .\union_benchmarks\ratio_25\results\wizard_benchmark.json
+rag_system: wizard
+llm_model: deepseek-chat
+questions_processed: 750
+total_runtime_seconds: 3177.853
+average_runtime_per_question_seconds: 4.237
+average_retrieval_time_seconds: 0.114
+average_generation_time_seconds: 1.347
+total_input_tokens: 135860
+total_output_tokens: 43904
+total_tokens: 179764
+average_input_tokens_per_question: 181.15
+average_output_tokens_per_question: 58.54
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-23T01:29:43.504425
+benchmark_file: .\union_benchmarks\ratio_25\wiki_benchmark.json
+output_file: .\union_benchmarks\ratio_25\results\wiki_benchmark.json
+rag_system: wiki
+llm_model: deepseek-chat
+questions_processed: 750
+total_runtime_seconds: 1217.487
+average_runtime_per_question_seconds: 1.623
+average_retrieval_time_seconds: 0.011
+average_generation_time_seconds: 1.579
+total_input_tokens: 550791
+total_output_tokens: 72143
+total_tokens: 622934
+average_input_tokens_per_question: 734.39
+average_output_tokens_per_question: 96.19
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-23T01:52:07.784264
+benchmark_file: .\union_benchmarks\ratio_25\covid_benchmark.json
+output_file: .\union_benchmarks\ratio_25\results\covid_benchmark.json
+rag_system: covid
+llm_model: deepseek-chat
+questions_processed: 111
+total_runtime_seconds: 389.549
+average_runtime_per_question_seconds: 3.509
+average_retrieval_time_seconds: 0.01
+average_generation_time_seconds: 3.454
+total_input_tokens: 3291773
+total_output_tokens: 29006
+total_tokens: 3320779
+average_input_tokens_per_question: 29655.61
+average_output_tokens_per_question: 261.32
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-23T02:01:48.913126
+benchmark_file: .\union_benchmarks\ratio_10\neural_benchmark.json
+output_file: .\union_benchmarks\ratio_10\results\neural_benchmark.json
+rag_system: neural
+llm_model: deepseek-chat
+questions_processed: 89
+total_runtime_seconds: 413.564
+average_runtime_per_question_seconds: 4.647
+average_retrieval_time_seconds: 2.27
+average_generation_time_seconds: 2.369
+total_input_tokens: 1497646
+total_output_tokens: 11455
+total_tokens: 1509101
+average_input_tokens_per_question: 16827.48
+average_output_tokens_per_question: 128.71
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-23T02:04:09.722212
+benchmark_file: .\union_benchmarks\ratio_10\ragify_benchmark.json
+output_file: .\union_benchmarks\ratio_10\results\ragify_benchmark.json
+rag_system: ragify
+llm_model: deepseek-chat
+questions_processed: 4
+total_runtime_seconds: 10.085
+average_runtime_per_question_seconds: 2.521
+average_retrieval_time_seconds: 0.01
+average_generation_time_seconds: 2.055
+total_input_tokens: 3732
+total_output_tokens: 663
+total_tokens: 4395
+average_input_tokens_per_question: 933.0
+average_output_tokens_per_question: 165.75
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-23T02:46:07.986299
+benchmark_file: .\union_benchmarks\ratio_10\wizard_benchmark.json
+output_file: .\union_benchmarks\ratio_10\results\wizard_benchmark.json
+rag_system: wizard
+llm_model: deepseek-chat
+questions_processed: 300
+total_runtime_seconds: 2502.197
+average_runtime_per_question_seconds: 8.341
+average_retrieval_time_seconds: 0.115
+average_generation_time_seconds: 1.267
+total_input_tokens: 53101
+total_output_tokens: 17256
+total_tokens: 70357
+average_input_tokens_per_question: 177.0
+average_output_tokens_per_question: 57.52
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-23T03:02:09.911484
+benchmark_file: .\union_benchmarks\ratio_10\wiki_benchmark.json
+output_file: .\union_benchmarks\ratio_10\results\wiki_benchmark.json
+rag_system: wiki
+llm_model: deepseek-chat
+questions_processed: 300
+total_runtime_seconds: 544.99
+average_runtime_per_question_seconds: 1.817
+average_retrieval_time_seconds: 0.01
+average_generation_time_seconds: 1.725
+total_input_tokens: 218807
+total_output_tokens: 29015
+total_tokens: 247822
+average_input_tokens_per_question: 729.36
+average_output_tokens_per_question: 96.72
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
+
+================================================================================
+timestamp: 2026-07-23T03:12:01.479188
+benchmark_file: .\union_benchmarks\ratio_10\covid_benchmark.json
+output_file: .\union_benchmarks\ratio_10\results\covid_benchmark.json
+rag_system: covid
+llm_model: deepseek-chat
+questions_processed: 45
+total_runtime_seconds: 179.195
+average_runtime_per_question_seconds: 3.982
+average_retrieval_time_seconds: 0.011
+average_generation_time_seconds: 3.863
+total_input_tokens: 1314643
+total_output_tokens: 11719
+total_tokens: 1326362
+average_input_tokens_per_question: 29214.29
+average_output_tokens_per_question: 260.42
+errors: 0
+cpu_count: 6
+memory_gb: 15.84
+python_version: 3.13.7
+operating_system: Windows-11-10.0.26200-SP0
+================================================================================
