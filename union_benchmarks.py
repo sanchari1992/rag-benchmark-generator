@@ -44,34 +44,34 @@ if __name__ == "__main__":
 
     # Add your JSON files here
     input_files = [
-        # "./exports/ragas/neural/run_20260701_102824/benchmark.json",
-        # "./exports/ares/neural/run_20260702_095714/benchmark.json",
-        # "./exports/datamorgana/neural/run_20260702_132618/benchmark.json",
-        # "./exports/deepeval/neural/run_20260704_172651/benchmark.json"
+        # "./exports/ragas/neural/run_20260721_080651/benchmark.json",
+        # "./exports/ares/neural/run_20260721_085342/benchmark.json",
+        # "./exports/datamorgana/neural/run_20260721_090911/benchmark.json",
+        # "./exports/deepeval/neural/run_20260721_092307/benchmark.json"
 
-        # "./exports/ragas/ragify/run_20260701_104134/benchmark.json",
-        # "./exports/ares/ragify/run_20260702_100408/benchmark.json",
-        # "./exports/datamorgana/ragify/run_20260702_133302/benchmark.json",
-        # "./exports/deepeval/ragify/run_20260706_125857/benchmark.json"
+        # "./exports/ragas/ragify/run_20260721_092751/benchmark.json",
+        # "./exports/ares/ragify/run_20260721_092936/benchmark.json",
+        # "./exports/datamorgana/ragify/run_20260721_093102/benchmark.json",
+        # "./exports/deepeval/ragify/run_20260721_093255/benchmark.json"
 
-        # "./exports/ragas/wizard/run_20260701_153830/benchmark.json",
-        # "./exports/ares/wizard/run_20260702_105354/benchmark.json",
-        # "./exports/datamorgana/wizard/run_20260702_143452/benchmark.json",
-        # "./exports/deepeval/wizard/run_20260707_153502/benchmark.json"
+        # "./exports/ragas/wizard/run_20260721_101509/benchmark.json",
+        # "./exports/ares/wizard/run_20260721_112920/benchmark.json",
+        # "./exports/datamorgana/wizard/run_20260721_124759/benchmark.json",
+        # "./exports/deepeval/wizard/run_20260721_140125/benchmark.json"
 
-        # "./exports/ragas/wiki/run_20260701_210247/benchmark.json",
-        # "./exports/ares/wiki/run_20260702_130521/benchmark.json",
-        # "./exports/datamorgana/wiki/run_20260702_133712/benchmark.json",
-        # "./exports/deepeval/wiki/run_20260706_132334/benchmark.json"
+        # "./exports/ragas/wiki/run_20260721_142743/benchmark.json",
+        # "./exports/ares/wiki/run_20260721_151026/benchmark.json",
+        # "./exports/datamorgana/wiki/run_20260721_181309/benchmark.json",
+        # "./exports/deepeval/wiki/run_20260721_194626/benchmark.json"
 
-        "./exports/ragas/covid/run_20260701_211157/benchmark.json",
-        "./exports/ares/covid/run_20260702_131802/benchmark.json",
-        "./exports/datamorgana/covid/run_20260702_135115/benchmark.json",
-        "./exports/deepeval/covid/run_20260707_140000/benchmark.json"
+        "./exports/ragas/covid/run_20260721_195834/benchmark.json",
+        "./exports/ares/covid/run_20260721_200554/benchmark.json",
+        "./exports/datamorgana/covid/run_20260721_201250/benchmark.json",
+        # "./exports/deepeval/covid/run_20260707_140000/benchmark.json"
     ]
 
     # Output merged JSON
-    output_file = "./union_benchmarks/covid_benchmark.json"
+    output_file = "./union_benchmarks/ratio_100/covid_benchmark.json"
 
     merge_json_files(
         input_files,
