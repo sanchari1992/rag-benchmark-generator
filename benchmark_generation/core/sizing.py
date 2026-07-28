@@ -8,8 +8,8 @@ class DatasetSizingConfig:
     """
 
     ratio: float = 0.05          # default 5%
-    min_size: int = 20           # lower bound
-    max_size: int = 1000         # upper bound
+    min_size: int = 500          # lower bound
+    max_size: int = 10000         # upper bound
 
 
 def compute_benchmark_size(num_chunks: int, config: DatasetSizingConfig):
