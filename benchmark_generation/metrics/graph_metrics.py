@@ -3,17 +3,12 @@ graph_metrics.py
 
 Graph-based structural metrics for benchmark evaluation.
 
-This module assumes that each record contains a graph representation
-of entities or reasoning structure.
-
-Expected input per record:
-    record["graph"] = networkx.Graph or networkx.DiGraph
-
-If directed graphs are used, metrics are automatically converted
-to undirected where needed for consistency.
+This module builds an entity graph from each benchmark question and
+computes graph-based metrics that approximate reasoning complexity.
 
 Metrics implemented
 -------------------
+Structure
 - Graph density
 - Average node degree
 - Graph diameter
@@ -21,6 +16,12 @@ Metrics implemented
 - Average shortest path length
 - Clustering coefficient
 - Degree centralization
+
+Reasoning
+- Reasoning depth
+- Maximum reasoning distance
+- Multi-hop entity pair count
+- Graph expansion ratio
 
 Dependencies:
     pip install networkx
@@ -59,13 +60,16 @@ def to_undirected(G):
 def graph_density(G):
     if G is None or len(G) == 0:
         return 0.0
+
     return nx.density(G)
 
 
 def average_node_degree(G):
     if G is None or len(G) == 0:
         return 0.0
+
     degrees = [deg for _, deg in G.degree()]
+
     return sum(degrees) / len(degrees)
 
 
@@ -91,6 +95,7 @@ def graph_diameter(G):
 
 
 def connected_components(G):
+
     if G is None or len(G) == 0:
         return 0
 
@@ -101,7 +106,7 @@ def connected_components(G):
 
 def average_shortest_path(G):
     """
-    Average shortest path over largest connected component.
+    Average shortest path over the largest connected component.
     """
     if G is None or len(G) == 0:
         return 0.0
@@ -121,9 +126,12 @@ def average_shortest_path(G):
 
 
 def clustering_coefficient(G):
+
     if G is None or len(G) == 0:
         return 0.0
+
     G = to_undirected(G)
+
     return nx.average_clustering(G)
 
 
@@ -133,8 +141,7 @@ def clustering_coefficient(G):
 
 def degree_centralization(G):
     """
-    Freeman degree centralization:
-    measures inequality of node degrees.
+    Freeman degree centralization.
     """
     if G is None or len(G) == 0:
         return 0.0
@@ -157,6 +164,72 @@ def degree_centralization(G):
 
 
 ###########################################################
+# Reasoning Metrics
+###########################################################
+
+def reasoning_depth(G):
+    """
+    Approximate reasoning depth.
+
+    If the graph is a DAG, use the longest directed path.
+    Otherwise fall back to graph diameter.
+    """
+    if G is None or len(G) == 0:
+        return 0
+
+    try:
+        if G.is_directed() and nx.is_directed_acyclic_graph(G):
+            return nx.dag_longest_path_length(G)
+    except Exception:
+        pass
+
+    return graph_diameter(G)
+
+
+def reasoning_distance(G):
+    """
+    Maximum reasoning distance between two connected entities.
+    """
+    if G is None or len(G) == 0:
+        return 0
+
+    return graph_diameter(G)
+
+
+def multihop_entity_pair_count(G):
+    """
+    Count entity pairs requiring two or more hops.
+    """
+    if G is None or len(G) == 0:
+        return 0
+
+    G = to_undirected(G)
+
+    count = 0
+
+    for source, paths in nx.all_pairs_shortest_path_length(G):
+
+        for target, distance in paths.items():
+
+            if source < target and distance >= 2:
+                count += 1
+
+    return count
+
+
+def graph_expansion_ratio(G):
+    """
+    Edge-to-node ratio.
+
+    Higher values indicate denser reasoning structures.
+    """
+    if G is None or G.number_of_nodes() == 0:
+        return 0.0
+
+    return G.number_of_edges() / G.number_of_nodes()
+
+
+###########################################################
 # Main Compute Function
 ###########################################################
 
@@ -170,14 +243,47 @@ def compute(records):
         G = build_entity_graph(record["question"])
 
         # -------------------------
-        # Global structure metrics
+        # Structural metrics
         # -------------------------
-        record["graph_density"] = graph_density(G)
-        record["average_node_degree"] = average_node_degree(G)
+
+        record["graph_density"] = round(
+            graph_density(G), 3
+        )
+
+        record["average_node_degree"] = round(
+            average_node_degree(G), 3
+        )
+
         record["graph_diameter"] = graph_diameter(G)
+
         record["connected_components"] = connected_components(G)
-        record["average_shortest_path"] = average_shortest_path(G)
-        record["clustering_coefficient"] = clustering_coefficient(G)
-        record["degree_centralization"] = degree_centralization(G)
+
+        record["average_shortest_path"] = round(
+            average_shortest_path(G), 3
+        )
+
+        record["clustering_coefficient"] = round(
+            clustering_coefficient(G), 3
+        )
+
+        record["degree_centralization"] = round(
+            degree_centralization(G), 3
+        )
+
+        # -------------------------
+        # Reasoning metrics
+        # -------------------------
+
+        record["reasoning_depth"] = reasoning_depth(G)
+
+        record["reasoning_distance"] = reasoning_distance(G)
+
+        record["multihop_entity_pair_count"] = (
+            multihop_entity_pair_count(G)
+        )
+
+        record["graph_expansion_ratio"] = round(
+            graph_expansion_ratio(G), 3
+        )
 
     return records

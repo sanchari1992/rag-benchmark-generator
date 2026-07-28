@@ -1,29 +1,31 @@
 """
 syntax_metrics.py
 
-Syntactic complexity metrics for benchmark questions and answers.
+Syntactic metrics for benchmark questions.
 
-These metrics capture structural and grammatical properties of text,
-useful for evaluating reasoning complexity and linguistic variation.
+These metrics focus on syntactic properties that are useful for
+identifying missing benchmark coverage and generating new question
+variants.
 
 Metrics implemented
 -------------------
 
-Tree / Structure
-- Parse tree depth (constituency proxy via dependency depth)
-- Dependency tree depth
+Sentence Structure
 - Average dependency distance
-
-Clause / Phrase structure
 - Clause count
-- Average noun phrase length
-- Average verb phrase length
+- Subordinate clause count
+- Coordination count
 
-Distributional syntax
+Question Form
+- Interrogative type
+- Conditional count
+- Negation count
+
+Distribution
 - POS entropy
 
-Voice / construction
-- Passive voice detection ratio
+Construction
+- Passive voice ratio
 
 Dependencies:
     pip install spacy
@@ -34,13 +36,60 @@ import math
 from collections import Counter
 import spacy
 
-# Load spaCy model (fast, sufficient for research metrics)
+# Load spaCy model
 nlp = spacy.load("en_core_web_sm")
 
 
 ###########################################################
 # Utility
 ###########################################################
+
+SUBORDINATE_MARKERS = {
+    "because",
+    "although",
+    "though",
+    "while",
+    "whereas",
+    "since",
+    "if",
+    "unless",
+    "until",
+    "before",
+    "after",
+    "once",
+    "when",
+    "whenever",
+}
+
+COORDINATION_MARKERS = {
+    "and",
+    "or",
+    "but",
+    "nor",
+    "yet",
+}
+
+NEGATION_MARKERS = {
+    "not",
+    "no",
+    "never",
+    "neither",
+    "without",
+    "except",
+    "unless",
+}
+
+CONDITIONAL_MARKERS = {
+    "if",
+    "assuming",
+    "suppose",
+    "provided",
+    "providing",
+    "unless",
+    "otherwise",
+    "case",
+}
+
 
 def safe_doc(text):
     if text is None:
@@ -49,9 +98,6 @@ def safe_doc(text):
 
 
 def entropy(counter, total):
-    """
-    Compute Shannon entropy over POS tags.
-    """
     if total == 0:
         return 0.0
 
@@ -62,57 +108,12 @@ def entropy(counter, total):
 
 
 ###########################################################
-# Tree Depth Metrics
-###########################################################
-
-def dependency_tree_depth(doc):
-    """
-    Max depth of dependency tree.
-    """
-    def depth(token):
-        if not list(token.children):
-            return 1
-        return 1 + max(depth(child) for child in token.children)
-
-    roots = [token for token in doc if token.head == token]
-
-    if not roots:
-        return 0
-
-    return max(depth(root) for root in roots)
-
-
-def parse_tree_depth(record, field):
-    """
-    Proxy parse tree depth using dependency tree depth.
-    """
-    doc = safe_doc(record.get(field, ""))
-    return dependency_tree_depth(doc)
-
-
-def question_parse_tree_depth(record):
-    return parse_tree_depth(record, "question")
-
-
-def answer_parse_tree_depth(record):
-    return parse_tree_depth(record, "answer")
-
-
-def question_dependency_tree_depth(record):
-    return question_parse_tree_depth(record)
-
-
-def answer_dependency_tree_depth(record):
-    return answer_parse_tree_depth(record)
-
-
-###########################################################
 # Dependency Distance
 ###########################################################
 
 def dependency_distance(doc):
     """
-    Average absolute distance between token and its head.
+    Average absolute distance between each token and its head.
     """
     distances = [
         abs(token.i - token.head.i)
@@ -127,72 +128,68 @@ def dependency_distance(doc):
 
 
 def question_dependency_distance(record):
-    doc = safe_doc(record.get("question", ""))
-    return dependency_distance(doc)
-
-
-def answer_dependency_distance(record):
-    doc = safe_doc(record.get("answer", ""))
-    return dependency_distance(doc)
+    return dependency_distance(safe_doc(record.get("question", "")))
 
 
 ###########################################################
-# Clause Count (heuristic)
+# Clause Count
 ###########################################################
 
 def clause_count(doc):
     """
     Approximate clause count using finite verbs.
     """
-    return sum(1 for token in doc if token.pos_ == "VERB")
+    return sum(
+        1
+        for token in doc
+        if token.pos_ in {"VERB", "AUX"} and token.dep_ != "aux"
+    )
 
 
 def question_clause_count(record):
-    doc = safe_doc(record.get("question", ""))
-    return clause_count(doc)
-
-
-def answer_clause_count(record):
-    doc = safe_doc(record.get("answer", ""))
-    return clause_count(doc)
+    return clause_count(safe_doc(record.get("question", "")))
 
 
 ###########################################################
-# Phrase Lengths
+# Subordinate Clause Count
 ###########################################################
 
-def average_np_length(doc):
-    nps = list(doc.noun_chunks)
-
-    if not nps:
-        return 0.0
-
-    return sum(len(np) for np in nps) / len(nps)
-
-
-def average_vp_length(doc):
-    vps = [token for token in doc if token.pos_ == "VERB"]
-
-    if not vps:
-        return 0.0
-
-    return sum(len(list(token.children)) + 1 for token in vps) / len(vps)
+def subordinate_clause_count(doc):
+    """
+    Counts subordinate clause markers.
+    """
+    return sum(
+        1
+        for token in doc
+        if token.text.lower() in SUBORDINATE_MARKERS
+    )
 
 
-def question_average_np_length(record):
-    return average_np_length(safe_doc(record.get("question", "")))
+def question_subordinate_clause_count(record):
+    return subordinate_clause_count(
+        safe_doc(record.get("question", ""))
+    )
 
 
-def answer_average_np_length(record):
-    return average_np_length(safe_doc(record.get("answer", "")))
+###########################################################
+# Coordination Count
+###########################################################
+
+def coordination_count(doc):
+    """
+    Counts coordinating conjunctions.
+    """
+    return sum(
+        1
+        for token in doc
+        if token.text.lower() in COORDINATION_MARKERS
+    )
 
 
-def question_average_vp_length(record):
-    return average_vp_length(safe_doc(record.get("question", "")))
-
-
-def answer_average_vp_length(record):
-    return average_vp_length(safe_doc(record.get("answer", "")))
+def question_coordination_count(record):
+    return coordination_count(
+        safe_doc(record.get("question", ""))
+    )
 
 
 ###########################################################
@@ -203,45 +200,148 @@ def pos_entropy(doc):
     tags = [token.pos_ for token in doc]
 
     counter = Counter(tags)
-    total = len(tags)
 
-    return entropy(counter, total)
+    return entropy(counter, len(tags))
 
 
 def question_pos_entropy(record):
-    return pos_entropy(safe_doc(record.get("question", "")))
-
-
-def answer_pos_entropy(record):
-    return pos_entropy(safe_doc(record.get("answer", "")))
+    return pos_entropy(
+        safe_doc(record.get("question", ""))
+    )
 
 
 ###########################################################
-# Passive Voice Detection
+# Passive Voice
 ###########################################################
 
 def passive_voice_ratio(doc):
+    """
+    Ratio of sentences written in passive voice.
+    """
     passive = 0
-    total_sentences = len(list(doc.sents))
+    total = len(list(doc.sents))
 
-    for sent in doc.sents:
-        for token in sent:
-            if token.dep_ == "auxpass" or token.tag_ == "VBN":
-                passive += 1
-                break
-
-    if total_sentences == 0:
+    if total == 0:
         return 0.0
 
-    return passive / total_sentences
+    for sent in doc.sents:
+
+        if any(
+            token.dep_ == "auxpass"
+            or token.dep_ == "nsubjpass"
+            for token in sent
+        ):
+            passive += 1
+
+    return passive / total
 
 
 def question_passive_voice(record):
-    return passive_voice_ratio(safe_doc(record.get("question", "")))
+    return passive_voice_ratio(
+        safe_doc(record.get("question", ""))
+    )
 
 
-def answer_passive_voice(record):
-    return passive_voice_ratio(safe_doc(record.get("answer", "")))
+###########################################################
+# Negation Count
+###########################################################
+
+def negation_count(doc):
+    """
+    Counts negation words.
+    """
+    return sum(
+        1
+        for token in doc
+        if token.text.lower() in NEGATION_MARKERS
+    )
+
+
+def question_negation_count(record):
+    return negation_count(
+        safe_doc(record.get("question", ""))
+    )
+
+
+###########################################################
+# Conditional Count
+###########################################################
+
+def conditional_count(doc):
+    """
+    Counts conditional markers.
+    """
+    return sum(
+        1
+        for token in doc
+        if token.text.lower() in CONDITIONAL_MARKERS
+    )
+
+
+def question_conditional_count(record):
+    return conditional_count(
+        safe_doc(record.get("question", ""))
+    )
+
+
+###########################################################
+# Interrogative Type
+###########################################################
+
+def interrogative_type(record):
+    """
+    Classifies question by its opening word.
+
+    Returns one of:
+    what, who, when, where, why, how,
+    which, yes_no, other
+    """
+    text = record.get("question", "").strip().lower()
+
+    if not text:
+        return "other"
+
+    first = text.split()[0]
+
+    wh = {
+        "what",
+        "who",
+        "when",
+        "where",
+        "why",
+        "how",
+        "which",
+        "whose",
+        "whom",
+    }
+
+    if first in wh:
+        return first
+
+    yes_no = {
+        "is",
+        "are",
+        "was",
+        "were",
+        "do",
+        "does",
+        "did",
+        "can",
+        "could",
+        "should",
+        "would",
+        "will",
+        "has",
+        "have",
+        "had",
+        "may",
+        "might",
+    }
+
+    if first in yes_no:
+        return "yes_no"
+
+    return "other"
 
 
 ###########################################################
@@ -250,51 +350,48 @@ def answer_passive_voice(record):
 
 def compute(records):
     """
-    Compute all syntactic metrics for QA pairs.
+    Compute syntactic metrics for benchmark questions.
     """
 
     for record in records:
 
-        # -------------------------
-        # Parse / Tree structure
-        # -------------------------
-        record["question_parse_tree_depth"] = question_parse_tree_depth(record)
-        record["answer_parse_tree_depth"] = answer_parse_tree_depth(record)
+        record["question_dependency_distance"] = round(
+            question_dependency_distance(record),
+            2,
+        )
 
-        record["question_dependency_tree_depth"] = question_dependency_tree_depth(record)
-        record["answer_dependency_tree_depth"] = answer_dependency_tree_depth(record)
+        record["question_clause_count"] = (
+            question_clause_count(record)
+        )
 
-        # -------------------------
-        # Dependency distance
-        # -------------------------
-        record["question_dependency_distance"] = question_dependency_distance(record)
-        record["answer_dependency_distance"] = answer_dependency_distance(record)
+        record["question_subordinate_clause_count"] = (
+            question_subordinate_clause_count(record)
+        )
 
-        # -------------------------
-        # Clause structure
-        # -------------------------
-        record["question_clause_count"] = question_clause_count(record)
-        record["answer_clause_count"] = answer_clause_count(record)
+        record["question_coordination_count"] = (
+            question_coordination_count(record)
+        )
 
-        # -------------------------
-        # Phrase structure
-        # -------------------------
-        record["question_average_np_length"] = question_average_np_length(record)
-        record["answer_average_np_length"] = answer_average_np_length(record)
+        record["question_pos_entropy"] = round(
+            question_pos_entropy(record),
+            3,
+        )
 
-        record["question_average_vp_length"] = question_average_vp_length(record)
-        record["answer_average_vp_length"] = answer_average_vp_length(record)
+        record["question_passive_voice_ratio"] = round(
+            question_passive_voice(record),
+            3,
+        )
 
-        # -------------------------
-        # POS entropy
-        # -------------------------
-        record["question_pos_entropy"] = question_pos_entropy(record)
-        record["answer_pos_entropy"] = answer_pos_entropy(record)
+        record["question_negation_count"] = (
+            question_negation_count(record)
+        )
 
-        # -------------------------
-        # Passive voice
-        # -------------------------
-        record["question_passive_voice_ratio"] = question_passive_voice(record)
-        record["answer_passive_voice_ratio"] = answer_passive_voice(record)
+        record["question_conditional_count"] = (
+            question_conditional_count(record)
+        )
+
+        record["question_interrogative_type"] = (
+            interrogative_type(record)
+        )
 
     return records

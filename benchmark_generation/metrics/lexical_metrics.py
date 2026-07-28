@@ -1,25 +1,17 @@
 """
 lexical_metrics.py
 
-Simple lexical statistics for benchmark questions and answers.
+Lexical statistics for benchmark questions.
 
 Metrics implemented
 -------------------
-Question Metrics
 - Question word count
-- Question character count
-- Question average word length
 - Question sentence count
 - Question longest sentence word count
 - Question hapax ratio
-
-Answer Metrics
-- Answer word count
-- Answer character count
-- Answer average word length
-- Answer sentence count
-- Answer longest sentence word count
-- Answer hapax ratio
+- Question lexical diversity (Type-Token Ratio)
+- Question rare word ratio
+- Question reasoning cue count
 """
 
 import re
@@ -29,6 +21,28 @@ from collections import Counter
 ###########################################################
 # Utility Functions
 ###########################################################
+
+REASONING_CUES = {
+    "why",
+    "how",
+    "explain",
+    "compare",
+    "contrast",
+    "justify",
+    "reason",
+    "infer",
+    "predict",
+    "evaluate",
+    "analyze",
+    "analyse",
+    "because",
+    "effect",
+    "cause",
+    "consequence",
+    "relationship",
+    "impact",
+}
+
 
 def tokenize(text):
     """
@@ -42,16 +56,13 @@ def tokenize(text):
 
 def split_sentences(text):
     """
-    Very lightweight sentence splitter.
-
-    Splits text on '.', '!', and '?'.
+    Lightweight sentence splitter.
     """
     if text is None:
         return []
 
     sentences = re.split(r"[.!?]+", text)
-
-    return [sentence.strip() for sentence in sentences if sentence.strip()]
+    return [s.strip() for s in sentences if s.strip()]
 
 
 ###########################################################
@@ -60,19 +71,6 @@ def split_sentences(text):
 
 def question_word_count(record):
     return len(tokenize(record.get("question", "")))
-
-
-def question_character_count(record):
-    return len(record.get("question", ""))
-
-
-def question_average_word_length(record):
-    tokens = tokenize(record.get("question", ""))
-
-    if not tokens:
-        return 0.0
-
-    return sum(len(token) for token in tokens) / len(tokens)
 
 
 def question_sentence_count(record):
@@ -103,53 +101,45 @@ def question_hapax_ratio(record):
     return hapax / len(tokens)
 
 
-###########################################################
-# Answer Metrics
-###########################################################
+def question_lexical_diversity(record):
+    """
+    Type-Token Ratio (TTR).
 
-def answer_word_count(record):
-    return len(tokenize(record.get("answer", "")))
-
-
-def answer_character_count(record):
-    return len(record.get("answer", ""))
-
-
-def answer_average_word_length(record):
-    tokens = tokenize(record.get("answer", ""))
+    Number of unique words divided by total words.
+    """
+    tokens = tokenize(record.get("question", ""))
 
     if not tokens:
         return 0.0
 
-    return sum(len(token) for token in tokens) / len(tokens)
+    return len(set(tokens)) / len(tokens)
 
 
-def answer_sentence_count(record):
-    return len(split_sentences(record.get("answer", "")))
-
-
-def answer_longest_sentence_word_count(record):
-    sentences = split_sentences(record.get("answer", ""))
-
-    if not sentences:
-        return 0
-
-    return max(len(tokenize(sentence)) for sentence in sentences)
-
-
-def answer_hapax_ratio(record):
+def question_rare_word_ratio(record):
     """
-    Ratio of words occurring exactly once to total words.
+    Ratio of long words (>=7 characters).
+
+    A simple proxy for technical/domain-specific vocabulary.
     """
-    tokens = tokenize(record.get("answer", ""))
+    tokens = tokenize(record.get("question", ""))
 
     if not tokens:
         return 0.0
 
-    counts = Counter(tokens)
-    hapax = sum(1 for count in counts.values() if count == 1)
+    rare = sum(1 for token in tokens if len(token) >= 7)
 
-    return hapax / len(tokens)
+    return rare / len(tokens)
+
+
+def question_reasoning_cue_count(record):
+    """
+    Counts explicit reasoning cue words.
+
+    These cues often indicate higher-order reasoning questions.
+    """
+    tokens = tokenize(record.get("question", ""))
+
+    return sum(1 for token in tokens if token in REASONING_CUES)
 
 
 ###########################################################
@@ -158,37 +148,33 @@ def answer_hapax_ratio(record):
 
 def compute(records):
     """
-    Compute all lexical metrics for every benchmark record.
+    Compute lexical metrics for every benchmark question.
     """
 
     for record in records:
 
-        # Question metrics
         record["question_word_count"] = question_word_count(record)
-        record["question_character_count"] = question_character_count(record)
-        record["question_average_word_length"] = round(
-            question_average_word_length(record), 2
-        )
+
         record["question_sentence_count"] = question_sentence_count(record)
+
         record["question_longest_sentence_word_count"] = (
             question_longest_sentence_word_count(record)
         )
+
         record["question_hapax_ratio"] = round(
             question_hapax_ratio(record), 3
         )
 
-        # Answer metrics
-        record["answer_word_count"] = answer_word_count(record)
-        record["answer_character_count"] = answer_character_count(record)
-        record["answer_average_word_length"] = round(
-            answer_average_word_length(record), 2
+        record["question_lexical_diversity"] = round(
+            question_lexical_diversity(record), 3
         )
-        record["answer_sentence_count"] = answer_sentence_count(record)
-        record["answer_longest_sentence_word_count"] = (
-            answer_longest_sentence_word_count(record)
+
+        record["question_rare_word_ratio"] = round(
+            question_rare_word_ratio(record), 3
         )
-        record["answer_hapax_ratio"] = round(
-            answer_hapax_ratio(record), 3
+
+        record["question_reasoning_cue_count"] = (
+            question_reasoning_cue_count(record)
         )
 
     return records

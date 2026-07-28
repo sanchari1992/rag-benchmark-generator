@@ -1,30 +1,33 @@
 """
 semantic_metrics.py
 
-Semantic metrics for benchmark questions and answers.
+Semantic metrics for benchmark questions.
 
-These metrics capture semantic and information-oriented properties
-of benchmark questions and answers.
+These metrics capture semantic properties that are useful for
+analyzing benchmark coverage and identifying opportunities for
+generating new benchmark questions.
 
 Metrics implemented
 -------------------
 
-Question Metrics
+Entities
 - Named entity count
-- Entity density
-- WH-word category
-- Question type
-- Constraint count
+- Entity type diversity
+- Multi-entity relation count
 
-Answer Metrics
-- Named entity count
-- Entity density
+Reasoning Semantics
+- Constraint count
+- Numeric reasoning count
+- Temporal reasoning count
+- Comparative reasoning count
+- Causal reasoning count
 
 Dependencies:
     pip install spacy
     python -m spacy download en_core_web_sm
 """
 
+from collections import Counter
 import spacy
 
 # Load spaCy model
@@ -35,154 +38,70 @@ nlp = spacy.load("en_core_web_sm")
 # Utility
 ###########################################################
 
-def safe_doc(text):
-    if text is None:
-        text = ""
-    return nlp(str(text))
+NUMERIC_ENTITY_TYPES = {
+    "DATE",
+    "TIME",
+    "MONEY",
+    "PERCENT",
+    "QUANTITY",
+    "CARDINAL",
+    "ORDINAL",
+}
 
-
-###########################################################
-# Named Entity Metrics
-###########################################################
-
-def named_entity_count(doc):
-    """
-    Number of named entities.
-    """
-    return len(doc.ents)
-
-
-def entity_density(doc):
-    """
-    Named entities divided by total tokens.
-    """
-    tokens = [token for token in doc if not token.is_space]
-
-    if not tokens:
-        return 0.0
-
-    return len(doc.ents) / len(tokens)
-
-
-def question_named_entity_count(record):
-    return named_entity_count(safe_doc(record.get("question", "")))
-
-
-def answer_named_entity_count(record):
-    return named_entity_count(safe_doc(record.get("answer", "")))
-
-
-def question_entity_density(record):
-    return entity_density(safe_doc(record.get("question", "")))
-
-
-def answer_entity_density(record):
-    return entity_density(safe_doc(record.get("answer", "")))
-
-
-###########################################################
-# WH-word Category
-###########################################################
-
-WH_WORDS = {
-    "what",
-    "who",
-    "whom",
-    "whose",
+TEMPORAL_WORDS = {
+    "before",
+    "after",
+    "during",
+    "since",
+    "until",
     "when",
-    "where",
-    "why",
-    "which",
-    "how"
+    "while",
+    "first",
+    "last",
+    "previous",
+    "next",
+    "earlier",
+    "later",
 }
 
-
-def wh_word_category(doc):
-    """
-    Return the first WH-word if present.
-    """
-    for token in doc:
-        word = token.text.lower()
-
-        if word in WH_WORDS:
-            return word
-
-    return "none"
-
-
-def question_wh_word_category(record):
-    return wh_word_category(safe_doc(record.get("question", "")))
-
-
-###########################################################
-# Question Type
-###########################################################
-
-BOOLEAN_STARTERS = {
-    "is",
-    "are",
-    "was",
-    "were",
-    "do",
-    "does",
-    "did",
-    "can",
-    "could",
-    "should",
-    "would",
-    "will",
-    "has",
-    "have",
-    "had"
+COMPARATIVE_WORDS = {
+    "compare",
+    "comparison",
+    "difference",
+    "different",
+    "better",
+    "worse",
+    "larger",
+    "smaller",
+    "greater",
+    "less",
+    "higher",
+    "lower",
+    "versus",
+    "vs",
+    "than",
 }
 
-
-def question_type(doc):
-    """
-    Simple rule-based question classification.
-    """
-
-    tokens = [token.text.lower() for token in doc]
-
-    if not tokens:
-        return "unknown"
-
-    first = tokens[0]
-
-    if first in BOOLEAN_STARTERS:
-        return "boolean"
-
-    if first == "what":
-        return "what"
-
-    if first == "who":
-        return "who"
-
-    if first == "where":
-        return "where"
-
-    if first == "when":
-        return "when"
-
-    if first == "why":
-        return "why"
-
-    if first == "how":
-        return "how"
-
-    if first == "which":
-        return "which"
-
-    return "other"
-
-
-def question_question_type(record):
-    return question_type(safe_doc(record.get("question", "")))
-
-
-###########################################################
-# Constraint Count
-###########################################################
+CAUSAL_WORDS = {
+    "because",
+    "therefore",
+    "thus",
+    "hence",
+    "cause",
+    "causes",
+    "caused",
+    "effect",
+    "effects",
+    "result",
+    "results",
+    "impact",
+    "impacts",
+    "due",
+    "leads",
+    "lead",
+    "consequence",
+    "consequences",
+}
 
 CONSTRAINT_WORDS = {
     "must",
@@ -203,27 +122,152 @@ CONSTRAINT_WORDS = {
     "less",
     "greater",
     "maximum",
-    "minimum"
+    "minimum",
 }
 
 
+def safe_doc(text):
+    if text is None:
+        text = ""
+    return nlp(str(text))
+
+
+###########################################################
+# Entity Metrics
+###########################################################
+
+def named_entity_count(doc):
+    """
+    Number of named entities.
+    """
+    return len(doc.ents)
+
+
+def entity_type_diversity(doc):
+    """
+    Number of unique named entity types.
+    """
+    return len(set(ent.label_ for ent in doc.ents))
+
+
+def multi_entity_relation_count(doc):
+    """
+    Approximate number of entity relations.
+
+    Assumes questions with N entities have N-1 possible
+    semantic relationships.
+    """
+    n = len(doc.ents)
+
+    if n <= 1:
+        return 0
+
+    return n - 1
+
+
+def question_named_entity_count(record):
+    return named_entity_count(safe_doc(record.get("question", "")))
+
+
+def question_entity_type_diversity(record):
+    return entity_type_diversity(safe_doc(record.get("question", "")))
+
+
+def question_multi_entity_relation_count(record):
+    return multi_entity_relation_count(
+        safe_doc(record.get("question", ""))
+    )
+
+
+###########################################################
+# Constraint Metrics
+###########################################################
+
 def constraint_count(doc):
-    """
-    Count explicit constraint words.
-    """
-
-    count = 0
-
-    for token in doc:
-
-        if token.text.lower() in CONSTRAINT_WORDS:
-            count += 1
-
-    return count
+    return sum(
+        1
+        for token in doc
+        if token.text.lower() in CONSTRAINT_WORDS
+    )
 
 
 def question_constraint_count(record):
     return constraint_count(safe_doc(record.get("question", "")))
+
+
+###########################################################
+# Numeric Reasoning
+###########################################################
+
+def numeric_reasoning_count(doc):
+    """
+    Counts numeric-related named entities.
+    """
+    return sum(
+        1
+        for ent in doc.ents
+        if ent.label_ in NUMERIC_ENTITY_TYPES
+    )
+
+
+def question_numeric_reasoning_count(record):
+    return numeric_reasoning_count(
+        safe_doc(record.get("question", ""))
+    )
+
+
+###########################################################
+# Temporal Reasoning
+###########################################################
+
+def temporal_reasoning_count(doc):
+    return sum(
+        1
+        for token in doc
+        if token.text.lower() in TEMPORAL_WORDS
+    )
+
+
+def question_temporal_reasoning_count(record):
+    return temporal_reasoning_count(
+        safe_doc(record.get("question", ""))
+    )
+
+
+###########################################################
+# Comparative Reasoning
+###########################################################
+
+def comparative_reasoning_count(doc):
+    return sum(
+        1
+        for token in doc
+        if token.text.lower() in COMPARATIVE_WORDS
+    )
+
+
+def question_comparative_reasoning_count(record):
+    return comparative_reasoning_count(
+        safe_doc(record.get("question", ""))
+    )
+
+
+###########################################################
+# Causal Reasoning
+###########################################################
+
+def causal_reasoning_count(doc):
+    return sum(
+        1
+        for token in doc
+        if token.text.lower() in CAUSAL_WORDS
+    )
+
+
+def question_causal_reasoning_count(record):
+    return causal_reasoning_count(
+        safe_doc(record.get("question", ""))
+    )
 
 
 ###########################################################
@@ -232,45 +276,53 @@ def question_constraint_count(record):
 
 def compute(records):
     """
-    Compute semantic metrics for each QA pair.
+    Compute semantic metrics for benchmark questions.
     """
 
     for record in records:
 
-        # -------------------------
-        # Question metrics
-        # -------------------------
+        # ------------------------------------
+        # Entity Metrics
+        # ------------------------------------
 
         record["question_named_entity_count"] = (
             question_named_entity_count(record)
         )
 
-        record["question_entity_density"] = round(
-            question_entity_density(record), 3
+        record["question_entity_type_diversity"] = (
+            question_entity_type_diversity(record)
         )
 
-        record["question_wh_word_category"] = (
-            question_wh_word_category(record)
+        record["question_multi_entity_relation_count"] = (
+            question_multi_entity_relation_count(record)
         )
 
-        record["question_question_type"] = (
-            question_question_type(record)
-        )
+        # ------------------------------------
+        # Constraints
+        # ------------------------------------
 
         record["question_constraint_count"] = (
             question_constraint_count(record)
         )
 
-        # -------------------------
-        # Answer metrics
-        # -------------------------
+        # ------------------------------------
+        # Reasoning Categories
+        # ------------------------------------
 
-        record["answer_named_entity_count"] = (
-            answer_named_entity_count(record)
+        record["question_numeric_reasoning_count"] = (
+            question_numeric_reasoning_count(record)
         )
 
-        record["answer_entity_density"] = round(
-            answer_entity_density(record), 3
+        record["question_temporal_reasoning_count"] = (
+            question_temporal_reasoning_count(record)
+        )
+
+        record["question_comparative_reasoning_count"] = (
+            question_comparative_reasoning_count(record)
+        )
+
+        record["question_causal_reasoning_count"] = (
+            question_causal_reasoning_count(record)
         )
 
     return records
