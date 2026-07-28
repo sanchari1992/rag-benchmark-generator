@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 from pathlib import Path
 import json
+import argparse
 
 load_dotenv()
 
@@ -38,17 +39,57 @@ from benchmark_generation.core.sizing import DatasetSizingConfig, compute_benchm
 
 print("\n[1/4] Loading RAG adapter...")
 
-MODEL_NAME = "deepseek-chat"
 
-# RAG_NAME = "neural"
-# RAG_NAME = "ragify"
-# RAG_NAME = "wizard"
-# RAG_NAME = "wiki"
-RAG_NAME = "covid"
+# =========================================================
+# Parse command line arguments
+# =========================================================
+
+parser = argparse.ArgumentParser(description="Generate RAG benchmark")
+
+parser.add_argument(
+    "--rag",
+    type=str,
+    required=True,
+    choices=["neural", "ragify", "wizard", "wiki", "covid"],
+    help="RAG system"
+)
+
+parser.add_argument(
+    "--strategy",
+    type=str,
+    required=True,
+    choices=["ragas", "ares", "datamorgana", "deepeval"],
+    help="Benchmark generation strategy"
+)
+
+parser.add_argument(
+    "--model",
+    type=str,
+    default="deepseek-chat",
+    help="LLM model"
+)
+
+args = parser.parse_args()
+
+RAG_NAME = args.rag
+STRATEGY = args.strategy
+MODEL_NAME = args.model
 
 from adapters.factory import load_adapter
 
 adapter = load_adapter(RAG_NAME)
+
+# MODEL_NAME = "deepseek-chat"
+
+# RAG_NAME = "neural"
+# # RAG_NAME = "ragify"
+# # RAG_NAME = "wizard"
+# # RAG_NAME = "wiki"
+# # RAG_NAME = "covid"
+
+# from adapters.factory import load_adapter
+
+# adapter = load_adapter(RAG_NAME)
 
 stats = adapter.inspect()
 
@@ -65,12 +106,12 @@ SAMPLE_SIZE = compute_benchmark_size(
     config=DatasetSizingConfig(
         # ratio=0.05,
         ratio=1,
-        min_size=20,
-        max_size=1000
+        min_size=500,
+        max_size=10000
     )
 )
 
-print(f"Benchmark size (5% rule): {SAMPLE_SIZE}")
+print(f"Benchmark size (100% rule) Min 500 Max 10000: {SAMPLE_SIZE}")
 
 
 # =========================================================
@@ -100,7 +141,9 @@ from benchmark_generation.strategy_factory import load_strategy
 # STRATEGY = "ragas"
 # STRATEGY = "ares"
 # STRATEGY = "datamorgana"
-STRATEGY = "deepeval"
+
+# Don't run
+# STRATEGY = "deepeval"
 
 strategy = load_strategy(STRATEGY)
 
