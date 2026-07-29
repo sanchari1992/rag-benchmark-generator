@@ -23,7 +23,7 @@ Algorithm:
 
 Example
 
-pyth_compressor.py \
+main_compressor.py \
     --input wiki.json \
     --output wiki_50.json \
     --report report.json \
