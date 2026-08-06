@@ -31,3 +31,5 @@
 /union_benchmarks
 /v3_benchmarks
 /__pycache__
+/evaluators/prompts/__pycache__
+*.pyc

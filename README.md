@@ -87,6 +87,16 @@ python .\evaluators\evaluator.py \
 --output .\evaluation_results\ragas_ragify_evalmetrics.json
 ```
 
+```bash
+python main_evaluator.py \
+    benchmark.json \
+    answers.json \
+    --metrics \
+    ragas.faithfulness \
+    ares.faithfulness \
+    ours.graph_groundedness
+```
+
 ## Adding a New RAG System
 
 To integrate a new RAG repository:
