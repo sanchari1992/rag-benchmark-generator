@@ -33,3 +33,4 @@
 /__pycache__
 /evaluators/prompts/__pycache__
 *.pyc
+/metric_evaluation_reports

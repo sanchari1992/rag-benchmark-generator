@@ -7,6 +7,14 @@ from tqdm import tqdm
 from llm_judge import DeepSeekJudge
 from metric_registry import MetricRegistry
 
+# evaluate.py
+from sentence_transformers import SentenceTransformer
+
+_embed_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+def embed_fn(text):
+    return _embed_model.encode(text)
+
 
 def load_json(path):
     with open(path, "r", encoding="utf-8") as f:
@@ -61,74 +69,40 @@ def evaluate(
 ):
     benchmark = load_json(benchmark_path)
     results = load_json(results_path)
-
     merged = merge_data(benchmark, results)
 
     judge = DeepSeekJudge()
-
-    registry = MetricRegistry(judge)
+    registry = MetricRegistry(judge, embed_fn=embed_fn)
 
     evaluations = []
-
-    for item in tqdm(
-        merged,
-        desc="Evaluating",
-        unit="question"
-    ): 
-
+    for item in tqdm(merged, desc="Evaluating", unit="question"):
         row = dict(item)
-
+        row["evaluations"] = {}
         for metric in metric_names:
-
             metric_fn = registry.get(metric)
-
-            score = metric_fn(item)
-
-            row["evaluations"] = {}
-
-            for metric in metric_names:
-
-                metric_fn = registry.get(metric)
-
-                row["evaluations"][metric] = metric_fn(item)
-
+            row["evaluations"][metric] = metric_fn(item)
         evaluations.append(row)
-        summary = {}
 
-        for metric in metric_names:
-
-            scores = []
-
-            for row in evaluations:
-
-                value = row["evaluations"][metric]
-
-                if isinstance(value, dict):
-
-                    s = value.get("score")
-
-                    if s is not None:
-                        scores.append(s)
-
-            if scores:
-
-                summary[metric] = {
-                    "mean": round(sum(scores)/len(scores), 3),
-                    "min": round(min(scores), 3),
-                    "max": round(max(scores), 3),
-                    "count": len(scores)
-                }
+    # summary computed ONCE, after all items are scored
+    summary = {}
+    for metric in metric_names:
+        scores = []
+        for row in evaluations:
+            value = row["evaluations"][metric]
+            if isinstance(value, dict):
+                s = value.get("score")
+                if s is not None:
+                    scores.append(s)
+        if scores:
+            summary[metric] = {
+                "mean": round(sum(scores) / len(scores), 3),
+                "min": round(min(scores), 3),
+                "max": round(max(scores), 3),
+                "count": len(scores)
+            }
 
     with open(output_path, "w", encoding="utf-8") as f:
-        output = {
-
-            "summary": summary,
-
-            "results": evaluations
-
-        }
-
-        json.dump(output, f, indent=2)
+        json.dump({"summary": summary, "results": evaluations}, f, indent=2)
 
     print(f"\nSaved {len(evaluations)} evaluations")
 
